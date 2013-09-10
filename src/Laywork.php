@@ -5,7 +5,7 @@ global $_LAYWORKPATH;
 
 $_LAYWORKPATH = str_replace("\\", "/", __DIR__.'/..');
 
-class Laywork extends cn\laysoft\core\Base {
+class Laywork extends cn\laysoft\laywork\core\Base {
     public static function layworkpath($layworkpath) {
         global $_LAYWORKPATH;
         $_LAYWORKPATH = str_replace("\\", "/", is_dir($layworkpath)?$layworkpath:(__DIR__.'/..'));
