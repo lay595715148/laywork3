@@ -1,7 +1,4 @@
 <?php
-namespace cn\laysoft\laywork\core;
-if(!defined('INIT_LAYWORK')) { exit; }
-<?php
 /**
  * 基础数据模型
  * @see https://github.com/lay595715148/sensitive
@@ -9,7 +6,8 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * @author liaiyong<595715148@qq.com>
  * @Version: 0.1.48 (build 130723)
  */
-if(!defined('INIT_SENSITIVE')) { exit; }
+namespace cn\laysoft\laywork\core;
+if(!defined('INIT_LAYWORK')) { exit; }
 
 /**
  * <p>基础数据模型</p>
@@ -26,21 +24,22 @@ abstract class Bean extends Base {
     protected $properties = array();
     /**
      * class property types.
-     * string[0,'string',default],number[1,'number'],integer[2,'integer'],boolean[3,'boolean'],datetime[4,'datetime'],
+     * string[0,'string'],number[1,'number'],integer[2,'integer'],boolean[3,'boolean'],datetime[4,'datetime'],
      *     date[5,'date'],time[6,'time'],float[7,'float'],double[8,'double'],enum[array(1,2,3)],dateformat[array('dateformat'=>'Y-m-d')],other[array('other'=>...)]...
+     *     default nothing to do
      * example: array('id'=>'integer','name'=>0)
      */
-    protected $propertype = array();
+    protected $propertypes = array();
     /**
      * 构造方法
      * @param array $properties
      */
-    public function __construct($properties = array(), $propertype = array()) {
+    public function __construct($properties = array(), $propertypes = array()) {
         if(is_array($properties)) {
             $this->properties = $properties;
         }
-        if(is_array($propertype)) {
-            $this->propertype = $propertype;
+        if(is_array($propertypes)) {
+            $this->propertypes = $propertypes;
         }
     }
     /**
@@ -68,12 +67,12 @@ abstract class Bean extends Base {
      * @return void
      */
     public function __set($name, $value) {
-        $propertype = &$this->propertype;
+        $propertypes = &$this->propertypes;
         $properties = &$this->properties;
 
         if(array_key_exists($name, $properties)) {
-            if(array_key_exists($name, $propertype)) {
-                switch($propertype[$name]) {
+            if(array_key_exists($name, $propertypes)) {
+                switch($propertypes[$name]) {
                     case 0:
                     case 'string':
                         $properties[$name] = strval($value);
@@ -123,20 +122,20 @@ abstract class Bean extends Base {
                         $properties[$name] = doubleval($value);
                         break;
                     default:
-                        if(is_array($propertype[$name])) {
-                            if(array_key_exists('dateformat', $propertype[$name])) {
-                                $dateformart = $propertype[$name]['dateformat'];
+                        if(is_array($propertypes[$name])) {
+                            if(array_key_exists('dateformat', $propertypes[$name])) {
+                                $dateformart = $propertypes[$name]['dateformat'];
                                 if(is_numeric($value)) {
                                     $properties[$name] = date($dateformart, intval($value));
                                 } else if(is_string($value)) {
                                     $properties[$name] = date($dateformart, strtotime($value));
                                 }
-                            } else if(array_key_exists('other', $propertype[$name])) {
-                                $properties[$name] = $this->otherformart($value, $propertype[$name]);
+                            } else if(array_key_exists('other', $propertypes[$name])) {
+                                $properties[$name] = $this->otherformart($value, $propertypes[$name]);
                             } else {
-                                $key = array_search($value, $propertype[$name]);
+                                $key = array_search($value, $propertypes[$name]);
                                 if($key !== null) {
-                                    $properties[$name] = $propertype[$name][$key];
+                                    $properties[$name] = $propertypes[$name][$key];
                                 }
                             }
                         } else {
@@ -187,14 +186,14 @@ abstract class Bean extends Base {
         } else {
             $properties = &$this->properties;
             $keys = array_keys($properties);
-            $lower = array();
+            $lower = array();//setter和getter方法中不区分大小写时使用
             foreach($keys as $i=>$key) {
                 $lower[$i] = strtolower($key);
             }
             
             if(strtolower(substr($method, 0, 3)) === 'get') {
                 $proper = strtolower(substr($method, 3));
-                $index = array_search($proper,$lower);
+                $index = array_search($proper, $lower);
                 if($index !== null) {
                     return $this->{$properties[$keys[$index]]};
                 } else {
@@ -202,7 +201,7 @@ abstract class Bean extends Base {
                 }
             } else if(strtolower(substr($method, 0, 3)) === 'set'){
                 $proper = strtolower(substr($method, 3));
-                $index = array_search($proper,$lower);
+                $index = array_search($proper, $lower);
                 if($index !== null) {
                     $this->{$properties[$keys[$index]]} = $arguments[0];
                 } else {

@@ -4,7 +4,7 @@
  * @see https://github.com/lay595715148/laywork3
  * 
  * @author liaiyong<595715148@qq.com>
- * @Version: 0.1.48 (build 130911)
+ * @Version: 0.0.1 (build 130911)
  */
 namespace cn\laysoft\laywork\core;
 

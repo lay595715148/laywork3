@@ -15,7 +15,11 @@ require_once __DIR__.'/lib/layload/layload.php';
 Layload::rootpath(__DIR__);
 Layload::classpath(__DIR__.'/src');
 Layload::configure('/inc/classes.laywork.php');
-Layload::initialize();
+Layload::initialize(false);
 
+Laywork::initialize(false);
 
+class M extends cn\laysoft\laywork\core\TableBean {
+}
+//print_r(spl_autoload_functions());
 ?>
