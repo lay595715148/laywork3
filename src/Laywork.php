@@ -15,8 +15,30 @@ class Laywork {
      * @staticvar debug
      */
     public static $debug = false;
+    
+    /**
+     * @staticvar configuration
+     */
     public static $configuration = array();
-    public static function layworkpath($layworkpath) {
+    /**
+     * @staticvar all class mappings
+     */
+    public static $classes = array(
+        'Base' => '/cn/laysoft/laywork/core/Base.class.php',
+        'Bean' => '/cn/laysoft/laywork/core/Bean.class.php',
+        'Action' => '/cn/laysoft/laywork/core/Action.class.php',
+        'Scope' => '/cn/laysoft/laywork/core/Scope.class.php',
+        'Service' => '/cn/laysoft/laywork/core/Service.class.php',
+        'Store' => '/cn/laysoft/laywork/core/Store.class.php',
+        'TableBean' => '/cn/laysoft/laywork/core/TableBean.class.php',
+        'Template' => '/cn/laysoft/laywork/core/Template.class.php'
+    );
+    /**
+     * set laywork path
+     * @param $layworkpath laywork directory path,default is empty
+     * @return void
+     */
+    public static function layworkpath($layworkpath = '') {
         global $_LAYWORKPATH;
         $_LAYWORKPATH = str_replace("\\", "/", is_dir($layworkpath)?$layworkpath:dirname(__DIR__));
     }
@@ -36,54 +58,67 @@ class Laywork {
     public static function autoload($classname) {
         global $_LAYWORKPATH;
         $_CLASSPATH = $_LAYWORKPATH.'/src';
+        $classes = &Laywork::$classes;
         $suffixes = array('.php','.class.php','.inc');
 
-        $tmparr = explode("\\",$classname);
-        if(count($tmparr) > 1) {//if is namespace
-            $name = array_pop($tmparr);
-            $path = $_CLASSPATH.'/'.implode('/', $tmparr);
-            $required = false;
-            //命名空间文件夹查找
-            if(is_dir($path)) {
-                $tmppath = $path.'/'.$name;
-                foreach($suffixes as $i=>$suffix) {
-                    if(is_file($tmppath.$suffix)) {
-                        if(Laywork::$debug) echo 'require_once '.$tmppath.$suffix.'<br>';
-                        require_once $tmppath.$suffix;
-                        $required = true;
-                        break;
-                    }
-                }
+        if(array_key_exists($classname, $classes)) {//全名映射
+            if(is_file($classes[$classname])) {
+                if(Laywork::$debug) echo 'require_once '.$classes[$classname].'<br>';
+                require_once $classes[$classname];
+            } else if(is_file($_CLASSPATH.$classes[$classname])) {
+                if(Laywork::$debug) echo 'require_once '.$_CLASSPATH.$classes[$classname].'<br>';
+                require_once $_CLASSPATH.$classes[$classname];
             } else {
-                //TODO not found by namespace dir
+                //TODO mapping is error
             }
-        } else if(preg_match_all('/([A-Z]{1,}[a-z0-9]{0,}|[a-z0-9]{1,})_{0,1}/', $classname, $matches)) {
-            //TODO autoload class by regular
-            $path = $_CLASSPATH;
-            foreach($matches[1] as $index=>$item) {
-                $path .= '/'.$item;
-                if(is_dir($path)) {//顺序文件夹查找
-                    $tmppath = $path.'/'.substr($classname, strpos($classname, $item) + strlen($item));
-                    echo $tmppath.'<br>';
+        } else {
+            $tmparr = explode("\\",$classname);
+            if(count($tmparr) > 1) {//if is namespace
+                $name = array_pop($tmparr);
+                $path = $_CLASSPATH.'/'.implode('/', $tmparr);
+                $required = false;
+                //命名空间文件夹查找
+                if(is_dir($path)) {
+                    $tmppath = $path.'/'.$name;
                     foreach($suffixes as $i=>$suffix) {
                         if(is_file($tmppath.$suffix)) {
                             if(Laywork::$debug) echo 'require_once '.$tmppath.$suffix.'<br>';
                             require_once $tmppath.$suffix;
-                            break 2;
+                            $required = true;
+                            break;
                         }
                     }
-                    continue;
-                } else if($index == count($matches[1]) - 1) {
-                    foreach($suffixes as $i=>$suffix) {
-                        if(is_file($path.$suffix)) {
-                            if(Laywork::$debug) echo 'require_once '.$path.$suffix.'<br>';
-                            require_once $path.$suffix;
-                            break 2;
-                        }
-                    }
-                    break;
                 } else {
-                    //TODO not found by regular match
+                    //TODO not found by namespace dir
+                }
+            } else if(preg_match_all('/([A-Z]{1,}[a-z0-9]{0,}|[a-z0-9]{1,})_{0,1}/', $classname, $matches)) {
+                //TODO autoload class by regular
+                $path = $_CLASSPATH;
+                foreach($matches[1] as $index=>$item) {
+                    $path .= '/'.$item;
+                    if(is_dir($path)) {//顺序文件夹查找
+                        $tmppath = $path.'/'.substr($classname, strpos($classname, $item) + strlen($item));
+                        echo $tmppath.'<br>';
+                        foreach($suffixes as $i=>$suffix) {
+                            if(is_file($tmppath.$suffix)) {
+                                if(Laywork::$debug) echo 'require_once '.$tmppath.$suffix.'<br>';
+                                require_once $tmppath.$suffix;
+                                break 2;
+                            }
+                        }
+                        continue;
+                    } else if($index == count($matches[1]) - 1) {
+                        foreach($suffixes as $i=>$suffix) {
+                            if(is_file($path.$suffix)) {
+                                if(Laywork::$debug) echo 'require_once '.$path.$suffix.'<br>';
+                                require_once $path.$suffix;
+                                break 2;
+                            }
+                        }
+                        break;
+                    } else {
+                        //TODO not found by regular match
+                    }
                 }
             }
         }

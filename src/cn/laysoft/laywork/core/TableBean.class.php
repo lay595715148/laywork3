@@ -4,7 +4,6 @@
  * @author liaiyong<595715148@qq.com>
  * @Version: 0.0.1 (build 130911)
  */
-namespace cn\laysoft\laywork\core;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 /**
@@ -219,5 +218,5 @@ abstract class TableBean extends Bean {
  * 数据模型与表映射异常
  * @Version: 0.0.1 (build 130911)
  */
-class TableMappingException extends \Exception {}
+class TableMappingException extends Exception {}
 ?>
