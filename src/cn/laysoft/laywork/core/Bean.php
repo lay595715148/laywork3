@@ -24,8 +24,8 @@ abstract class Bean extends Base {
     protected $properties = array();
     /**
      * class property types.
-     * string[0,'string'],number[1,'number'],integer[2,'integer'],boolean[3,'boolean'],datetime[4,'datetime'],
-     *     date[5,'date'],time[6,'time'],float[7,'float'],double[8,'double'],enum[array(1,2,3)],dateformat[array('dateformat'=>'Y-m-d')],other[array('other'=>...)]...
+     * string[1,'string'],number[2,'number'],integer[3,'integer'],boolean[4,'boolean'],datetime[5,'datetime'],
+     *     date[6,'date'],time[7,'time'],float[8,'float'],double[9,'double'],enum[array(1,2,3)],dateformat[array('dateformat'=>'Y-m-d')],other[array('other'=>...)]...
      *     default nothing to do
      * example: array('id'=>'integer','name'=>0)
      */
@@ -73,23 +73,23 @@ abstract class Bean extends Base {
         if(array_key_exists($name, $properties)) {
             if(array_key_exists($name, $propertypes)) {
                 switch($propertypes[$name]) {
-                    case 0:
+                    case 1:
                     case 'string':
                         $properties[$name] = strval($value);
                         break;
-                    case 1:
+                    case 2:
                     case 'number':
                         $properties[$name] = 0 + $value;
                         break;
-                    case 2:
+                    case 3:
                     case 'integer':
                         $properties[$name] = intval($value);
                         break;
-                    case 3:
+                    case 4:
                     case 'boolean':
                         $properties[$name] = boolval($value);
                         break;
-                    case 4:
+                    case 5:
                     case 'datetime':
                         if(is_numeric($value)) {
                             $properties[$name] = date('Y-m-d H:i:s', intval($value));
@@ -97,7 +97,7 @@ abstract class Bean extends Base {
                             $properties[$name] = date('Y-m-d H:i:s', strtotime($value));
                         }
                         break;
-                    case 5:
+                    case 6:
                     case 'date':
                         if(is_numeric($value)) {
                             $properties[$name] = date('Y-m-d', intval($value));
@@ -105,19 +105,19 @@ abstract class Bean extends Base {
                             $properties[$name] = date('Y-m-d', strtotime($value));
                         }
                         break;
-                    case 6:
-                    case 'date':
+                    case 7:
+                    case 'time':
                         if(is_numeric($value)) {
                             $properties[$name] = date('H:i:s', intval($value));
                         } else if(is_string($value)) {
                             $properties[$name] = date('H:i:s', strtotime($value));
                         }
                         break;
-                    case 7:
+                    case 8:
                     case 'float':
                         $properties[$name] = floatval($value);
                         break;
-                    case 8:
+                    case 9:
                     case 'double':
                         $properties[$name] = doubleval($value);
                         break;
@@ -131,7 +131,7 @@ abstract class Bean extends Base {
                                     $properties[$name] = date($dateformart, strtotime($value));
                                 }
                             } else if(array_key_exists('other', $propertypes[$name])) {
-                                $properties[$name] = $this->otherformart($value, $propertypes[$name]);
+                                $properties[$name] = $this->otherFormat($value, $propertypes[$name]);
                             } else {
                                 $key = array_search($value, $propertypes[$name]);
                                 if($key !== null) {
@@ -152,9 +152,10 @@ abstract class Bean extends Base {
     }
     /**
      * please implement this method in sub class
+     * @return mixed
      */
-    protected function otherformart($value, $propertype) {
-        return 'other';
+    protected function otherFormat($value, $propertype) {
+        return $value;
     }
     /**
      * magic setter,get value of class property

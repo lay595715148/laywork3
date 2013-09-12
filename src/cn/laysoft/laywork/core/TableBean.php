@@ -13,14 +13,45 @@ if(!defined('INIT_LAYWORK')) { exit; }
  */
 abstract class TableBean extends Bean {
     /**
+     * 
+     * @return array
+     */
+    public abstract function mapping();
+    /**
+     * 
+     * @return string
+     */
+    public abstract function table();
+    /**
+     * 
+     * @return string
+     */
+    public abstract function pk();
+    /**
+     * 
+     * @return array
+     */
+    public abstract function columns();
+    /**
+     * 
+     * @return array
+     */
+    public function basicColumns() {
+        $columns = $this->columns();
+        return array_diff_key($columns, array($this->pk() => 'integer'));
+    }
+    /**
+     * 
+     * @return array
+     */
+    public function otherColumns() {
+        return $this->columns();
+    }
+    /**
      * 得到对应表名
      */
     public function toTable() {
-        global $_CFG;
-        $className = get_class($this);
-        $tables    = &$_CFG['mapping']['tables'];
-        if(!array_key_exists($className,$_CFG['mapping']['tables'])) throw new TableMappingException('There\'s no table mapping in $_CFG[\'mapping\'][\'tables\']');
-        return $tables[$className];
+        return $this->table();
     }
     /**
      * 得到对应属性名
@@ -28,11 +59,8 @@ abstract class TableBean extends Bean {
      * @return string
      */
     public function toProperty($field) {
-        global $_CFG;
-        $className = get_class($this);
-        if(!array_key_exists($className,$_CFG['mapping'])) throw new TableMappingException('There\'s no table fields mapping in $_CFG[\'mapping\']');
-        $mapping   = &$_CFG['mapping'][$className];
-        $property  = array_search($field,$mapping);
+        $mapping  = $this->mapping();
+        $property = array_search($field, $mapping);
         return ($property)?$property:$field;
     }
     /**
@@ -48,74 +76,46 @@ abstract class TableBean extends Bean {
      * @return string
      */
     public function toField($property) {
-        global $_CFG;
-        $className = get_class($this);
-        if(!array_key_exists($className,$_CFG['mapping'])) throw new TableMappingException('There\'s no table fields mapping in $_CFG[\'mapping\']');
-        $mapping   = &$_CFG['mapping'][$className];
-        $field     = (is_array($mapping) && array_key_exists($property,$mapping))?$mapping[$property]:$property;
-        return $field;
+        $mapping = $this->mapping();
+        return array_key_exists($property, $mapping)?$mapping[$property]:$property;
     }
     /**
      * 得到所有表字段名
      * @return array
      */
     public function toFields() {
-        global $_CFG;
-        $className = get_class($this);
-        if(!array_key_exists($className,$_CFG['mapping'])) throw new TableMappingException('There\'s no table fields mapping in $_CFG[\'mapping\']');
-        $mapping   = &$_CFG['mapping'][$className];
-        $fields    = array();
-        if($mapping && is_array($mapping)) {
-            foreach($this->toArray() as $k=>$v) {
-                $name     = $k;
-                $fields[] = array_key_exists($name,$mapping)?$mapping[$name]:$name;
-            }
-            return $fields;
-        } else {
-            return;
+        $mapping = $this->mapping();
+        $fields = array();
+        foreach($this->toArray() as $name=>$v) {
+            $fields[] = array_key_exists($name, $mapping)?$mapping[$name]:$name;
         }
+        return $fields;
     }
     /**
      * 得到用于插入数据的所有表字段名
      * @return array
      */
     public function toInsertFields() {
-        global $_CFG;
-        $className = get_class($this);
-        if(!array_key_exists($className,$_CFG['mapping'])) throw new TableMappingException('There\'s no table fields mapping in $_CFG[\'mapping\']');
-        $mapping   = &$_CFG['mapping'][$className];
-        $fields    = array();
-        if($mapping && is_array($mapping)) {
-            foreach($this->toArray() as $k=>$v) {
-                if($k === 'id') continue;
-                $name     = $k;
-                $fields[] = array_key_exists($name,$mapping)?$mapping[$name]:$name;
-            }
-            return $fields;
-        } else {
-            return;
+        $mapping = $this->mapping();
+        $fields  = array();
+        foreach($this->toProperties() as $name) {
+            if($name == 'id') continue;
+            $fields[] = array_key_exists($name, $mapping)?$mapping[$name]:$name;
         }
+        return $fields;
     }
     /**
      * 得到所有表字段的值
      * @return array
      */
     public function toValues() {
-        global $_CFG;
-        $className = get_class($this);
-        if(!array_key_exists($className,$_CFG['mapping'])) throw new TableMappingException('There\'s no table fields mapping in $_CFG[\'mapping\']');
-        $mapping   = &$_CFG['mapping'][$className];
-        $values    = array();
-        if($mapping) {
-            foreach($this->toArray() as $k=>$v) {
-                $name           = $k;
-                $field          = array_key_exists($name,$mapping)?$mapping[$name]:$name;
-                $values[$field] = $v;
-            }
-            return $values;
-        } else {
-            return;
+        $mapping = $this->mapping();
+        $values  = array();
+        foreach($this->toProperties() as $name) {
+            $field          = array_key_exists($name, $mapping)?$mapping[$name]:$name;
+            $values[$field] = $v;
         }
+        return $values;
     }
     /**
      * 将从数据库得到的结果数组转换为数据模型实体数组
@@ -127,7 +127,7 @@ abstract class TableBean extends Bean {
         $className = get_class($this);
         if(is_array($rows) && !empty($rows)) {
             foreach($rows as $k=>$row) {
-                if(is_array($row) && class_exists($className)) {
+                if(is_array($row)) {
                     $bean       = new $className();
                     $return     = $bean->rowToEntity($row);
                     $entities[] = $bean;
@@ -135,7 +135,7 @@ abstract class TableBean extends Bean {
             }
             return $entities;
         } else {
-            return;
+            return $entities;
         }
     }
     /**
@@ -144,19 +144,15 @@ abstract class TableBean extends Bean {
      * @return TableBean
      */
     public function rowToEntity($row) {
-        global $_CFG;
-        $className = get_class($this);
-        $mapping   = &$_CFG['mapping'][$className];
-        if(!array_key_exists($className,$_CFG['mapping'])) throw new TableMappingException('There\'s no table fields mapping in $_CFG[\'mapping\']');
-        if(is_array($row) && $mapping) {
-            foreach($this->toArray() as $k=>$v) {
-                    $name     = $k;
-                    $key      = array_key_exists($name,$mapping)?$mapping[$name]:$name;
-                    $this->$k = array_key_exists($key,$row)?$row[$key]:'';
+        $mapping = $this->mapping();
+        if(is_array($row)) {
+            foreach($this->toProperties() as $name) {
+                $key         = array_key_exists($name, $mapping)?$mapping[$name]:$name;
+                $this->$name = array_key_exists($key, $row)?$row[$key]:'';
             }
             return $this;
         } else {
-            return;
+            return $this;
         }
     }
     /**
@@ -190,7 +186,7 @@ abstract class TableBean extends Bean {
         $className = get_class($this);
         if(is_array($rows)) {
             foreach($rows as $k=>$row) {
-                if(is_array($row) && class_exists($className)) {
+                if(is_array($row)) {
                     $bean   = new $className();
                     $arr    = $bean->rowToArray($row);
                     $arrs[] = $arr;
@@ -198,7 +194,7 @@ abstract class TableBean extends Bean {
             }
             return $arrs;
         } else {
-            return;
+            return $arrs;
         }
     }
     /**
@@ -213,7 +209,7 @@ abstract class TableBean extends Bean {
             $arr  = $bean->toArray();
             return $arr;
         } else {
-            return;
+            return $arr;
         }
     }
 }
