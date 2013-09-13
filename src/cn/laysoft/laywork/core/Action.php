@@ -1,5 +1,7 @@
 <?php
 namespace cn\laysoft\laywork\core;
+use cn\laysoft\laywork\demo\DemoAction;
+use Laywork;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 /**
@@ -9,6 +11,33 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * @abstract
  */
 abstract class Action extends Base {
+    /**
+     * @staticvar action instance
+     */
+    private static $instance = null;
+    /**
+     * get action instance 
+     * @param $name name of action
+     * @param $config default is empty
+     * @return Action
+     */
+    public static function newInstance($name, $config = '') {
+        $config = is_array($config)?$config:Laywork::actionConfig($name);
+        $classname = isset($config['classname'])?$config['classname']:'DemoAction';
+        
+        if(self::$instance == null) {
+            if(isset($config['classname'])) {
+                self::$instance = new $classname($config);
+            } else {
+                self::$instance = new DemoAction($config);
+            }
+            if(!(self::$instance instanceof Action)) {
+                self::$instance = new DemoAction($config);
+            }
+        }
+        return self::$instance;
+    }
+    
     /**
      * @var array 配置信息数组
      */
@@ -33,42 +62,26 @@ abstract class Action extends Base {
      * 构造方法
      * @param array $config
      */
-    public function __construct($config = '') {
+    protected function __construct($config = '') {
         $this->config = $config;
+        $this->pathinfo = pathinfo($_SERVER['PHP_SELF']);
     }
     /**
      * 初始化
      */
-    public function init() {//must return $this
-        $this->pathinfo = pathinfo($_SERVER['PHP_SELF']);
-        
+    public function initialize() {//must return $this
         $config      = &$this->config;
         $services    = &$this->services;
-        $beans       = &$this->beans;
         $template    = &$this->template;
-        $serviceGen  = new DefaultServiceGen();
-        $beanGen     = new DefaultBeanGen();
-        $templateGen = new DefaultTemplateGen();
 
         if(is_array($config) && array_key_exists('services',$config) && $config['services'] && is_array($config['services'])) {
             //加载配置中的所有service
-            foreach($config['services'] as $k=>$v) {
-                $service = $serviceGen->genService($v)->init();
-                $services[$v] = $service;
+            foreach($config['services'] as $k=>$name) {
+                $services[$v] = Service::newInstance($name)->initialize();
             }
         } else {
             $service = $serviceGen->genService()->init();
             $services[] = $service;
-        }
-        if(is_array($config) && array_key_exists('beans',$config) && $config['beans'] && is_array($config['beans'])) {
-            //加载配置中的所有bean
-            foreach($config['beans'] as $k=>$v) {
-                $bean = $beanGen->genBean($v);
-                $beans[$v] = $bean;
-            }
-        } else {
-            $bean = $beanGen->genBean();
-            $beans[] = $bean;
         }
         $template = $templateGen->genTemplate()->init();
 
