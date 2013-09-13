@@ -1,14 +1,14 @@
 <?php
 /**
  * 与数据库关联的数据模型基础类
- * @author liaiyong<595715148@qq.com>
- * @Version: 0.0.1 (build 130911)
+ * @author Lay Li
+ * @version: 0.0.1 (build 130911)
  */
 if(!defined('INIT_LAYWORK')) { exit; }
 
 /**
  * 与数据库关联的数据模型基础类
- * @Version: 0.0.1 (build 130723)
+ * @abstract
  */
 abstract class TableBean extends Bean {
     /**
@@ -216,7 +216,7 @@ abstract class TableBean extends Bean {
 
 /**
  * 数据模型与表映射异常
- * @Version: 0.0.1 (build 130911)
+ * @version: 0.0.1 (build 130911)
  */
 class TableMappingException extends Exception {}
 ?>

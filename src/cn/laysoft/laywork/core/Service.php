@@ -1,11 +1,29 @@
 <?php
+/**
+ * 业务逻辑处理对象基础类
+ * @author Lay Li
+ * @version 0.0.1 (bulid 130911)
+ */
 namespace cn\laysoft\laywork\core;
 use cn\laysoft\laywork\demo\DemoService;
 use Laywork;
 if(!defined('INIT_LAYWORK')) { exit; }
 
+/**
+ * 业务逻辑处理对象基础类
+ * @abstract
+ */
 abstract class Service extends Base {
+    /**
+     * @staticvar service instance array
+     */
     private static $instances = array();
+    /**
+     * get service instance 
+     * @param $name name of service
+     * @param $config default is empty
+     * @return Service
+     */
     public static function newInstance($name, $config = '') {
         $config = is_array($config)?$config:Laywork::serviceConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoService';
@@ -16,7 +34,7 @@ abstract class Service extends Base {
             } else {
                 self::$instances[$name] = new DemoService($config);
             }
-            if(!(self::$instances[$name] instanceof Action)) {
+            if(!(self::$instances[$name] instanceof Service)) {
                 self::$instances[$name] = new DemoService($config);
             }
         }

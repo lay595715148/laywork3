@@ -1,10 +1,10 @@
 <?php
 /**
  * 基础数据模型
- * @see https://github.com/lay595715148/sensitive
+ * @see https://github.com/lay595715148/laywork3
  * 
- * @author liaiyong<595715148@qq.com>
- * @Version: 0.1.48 (build 130723)
+ * @author Lay Li
+ * @version: 0.0.1 (build 130911)
  */
 if(!defined('INIT_LAYWORK')) { exit; }
 
@@ -15,6 +15,26 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * @abstract
  */
 abstract class Bean extends Base {
+    /**
+     * get bean instance 
+     * @param $name name of bean
+     * @param $config default is empty
+     * @return Bean
+     */
+    public static function newInstance($name) {
+        $config = is_array($config)?$config:Laywork::beanConfig($name);
+        $classname = isset($config['classname'])?$config['classname']:'DemoBean';
+        
+        if(isset($config['classname'])) {
+            $instance = new $classname();
+        } else {
+            $instance = new DemoBean();
+        }
+        if(!($instance instanceof Bean)) {
+            $instance = new DemoBean();
+        }
+        return $instance;
+    }
     /**
      * class properties and default value.
      * please don't modify in all methods except for '__construct','__set','__get' and so on.
@@ -33,7 +53,7 @@ abstract class Bean extends Base {
      * 构造方法
      * @param array $properties
      */
-    public function __construct($properties = array(), $propertypes = array()) {
+    protected function __construct($properties = array(), $propertypes = array()) {
         if(is_array($properties)) {
             $this->properties = $properties;
         }

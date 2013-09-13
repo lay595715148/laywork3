@@ -1,4 +1,11 @@
 <?php
+/**
+ * 核心基础控制器
+ * @see https://github.com/lay595715148/laywork3
+ * 
+ * @author Lay Li
+ * @version: 0.0.1 (build 130911)
+ */
 namespace cn\laysoft\laywork\core;
 use cn\laysoft\laywork\demo\DemoAction;
 use Laywork;
@@ -68,6 +75,7 @@ abstract class Action extends Base {
     }
     /**
      * 初始化
+     * @return Action
      */
     public function initialize() {//must return $this
         $config      = &$this->config;
@@ -77,13 +85,16 @@ abstract class Action extends Base {
         if(is_array($config) && array_key_exists('services',$config) && $config['services'] && is_array($config['services'])) {
             //加载配置中的所有service
             foreach($config['services'] as $k=>$name) {
-                $services[$v] = Service::newInstance($name)->initialize();
+                $services[$name] = Service::newInstance($name);
+                $services[$name]->initialize();
             }
         } else {
-            $service = $serviceGen->genService()->init();
+            $service =  Service::newInstance();
+            $service->initialize();
             $services[] = $service;
-        }
-        $template = $templateGen->genTemplate()->init();
+        }print_r($services);echo '<br>';
+        $template = Template::newInstance();
+        $template->initialize();
 
         return $this;
     }
@@ -95,14 +106,9 @@ abstract class Action extends Base {
     /**
      * 路由执行方法
      * @param Exception $e 异常对象,默认为空
+     * @return Action
      */
-    public function dispatch($e = null) {//must return $this
-        global $_CFG;
-
-        $dispatchkey = $_CFG['action']['dispatch-key'];
-        $style       = $_CFG['action']['dispatch-style'];
-        $method      = $_CFG['action']['dispatch-method'];
-        $scope       = $_CFG['action']['dispatch-scope'];
+    public function dispatch() {//must return $this
 
         if($dispatchkey) {
             $variable   = Scope::parseScope((is_numeric($scope) && $scope >= 0 && $scope <= 5)?$scope:0);
@@ -117,8 +123,6 @@ abstract class Action extends Base {
 
         if(method_exists($this,$method) && $method != 'init' && $method != 'tail' && $method != 'dispatch' && substr($method,0,2) != '__') {
             $this->$method();
-        } else if($e){
-            $this->launch($e);
         } else {
             $this->launch();
         }
@@ -127,6 +131,7 @@ abstract class Action extends Base {
     }
     /**
      * 最后执行方法
+     * @return Action
      */
     public function tail() {//must return $this
         $ext = &$this->pathinfo;

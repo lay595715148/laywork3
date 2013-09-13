@@ -1,8 +1,8 @@
 <?php
 /**
  * 变量域工具类
- * @author liaiyong<595715148@qq.com>
- * @Version: 0.0.1 (build 130723)
+ * @author Lay Li
+ * @version: 0.0.1 (build 130911)
  */
 namespace cn\laysoft\laywork\core;
 
@@ -10,7 +10,6 @@ if(!defined('INIT_LAYWORK')) { exit; }
 
 /**
  * 变量域工具类
- * @Version: 0.0.1 (build 130723)
  */
 class Scope extends Base {
     const SCOPE_REQUEST = 0;

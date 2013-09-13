@@ -1,8 +1,17 @@
 <?php
-if(!defined('INIT_LAYWORK')) { exit; }
+/**
+ * Laywork主类
+ * @see https://github.com/lay595715148/laywork3
+ * 
+ * @author Lay Li
+ * @version: 0.0.1 (build 130911)
+ */
 
 use cn\laysoft\laywork\core\Action;
 use cn\laysoft\laywork\core\Service;
+use cn\laysoft\laywork\core\Store;
+use cn\laysoft\laywork\core\Bean;
+if(!defined('INIT_LAYWORK')) { exit; }
 
 global $_LAYWORKPATH,$_ROOTPATH;
 
@@ -387,8 +396,11 @@ class Laywork {
         echo '$_ROOTPATH: '.$_ROOTPATH.'<br>';
         echo '$_LAYWORKPATH: '.$_LAYWORKPATH.'<br>';
         
-        Action::newInstance($action);
-        Service::newInstance();
+        Action::newInstance($action)->initialize()->dispatch()->tail();
+        /*Service::newInstance();
+        Store::newInstance();
+        $m = Bean::newInstance();
+        echo '<pre>';print_r($m->rowsToArray(array(array('id'=>'21.22sd', 'datetime'=>'2011-10-31 03:16:40', 'type'=>'2'), array('id'=>'12sd', 'name'=>123, 'datetime'=>1320002200))));echo '</pre>';*/
     }
 }
 
