@@ -12,13 +12,13 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * @Version: 0.1.48 (build 130723)
  */
 class Arrange extends Base {
-	/**
-	 * @var int $index current position
-	 */
+    /**
+     * @var int $index current position
+     */
     private $index = 0;
-	/**
-	 * @var array $index order field array
-	 */
+    /**
+     * @var array $index order field array
+     */
     private $order = array();
     /**
      * get order array

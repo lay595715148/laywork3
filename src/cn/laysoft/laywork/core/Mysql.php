@@ -22,6 +22,9 @@ final class Mysql extends Store {
      * @var mixed mysql数据库操作结果
      */
     private $result;
+    public function __destruct() {
+        if($this->link) mysql_close($this->link);
+    }
     /**
      * 初始化
      */

@@ -12,17 +12,17 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * @author liaiyong
  */
 class Condition extends Base {
-	/**
-	 * @var int 当前存放Cell对象的起始序号
-	 */
+    /**
+     * @var int 当前存放Cell对象的起始序号
+     */
     private $index = 0;
-	/**
-	 * @var array<Cell> 存放Cell对象的数组
-	 */
+    /**
+     * @var array<Cell> 存放Cell对象的数组
+     */
     private $conds = array();
-	/**
-	 * @var int|bool 元素间连接是否使用OR(默认AND),或使用OR的起始位置
-	 */
+    /**
+     * @var int|bool 元素间连接是否使用OR(默认AND),或使用OR的起始位置
+     */
     private $orpos = false;
     /**
      * 构造方法
