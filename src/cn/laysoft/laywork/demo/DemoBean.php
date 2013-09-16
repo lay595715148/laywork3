@@ -18,7 +18,7 @@ class DemoBean extends TableBean {
         ));
     }
     public function table() {
-        return 'lay_demo';
+        return '`laysoft`.`lay_demo`';
     }
     public function columns() {
         return array(
