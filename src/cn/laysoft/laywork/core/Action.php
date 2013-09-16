@@ -82,17 +82,16 @@ abstract class Action extends Base {
         $services    = &$this->services;
         $template    = &$this->template;
 
+        //加载配置中的所有service
         if(is_array($config) && array_key_exists('services',$config) && $config['services'] && is_array($config['services'])) {
-            //加载配置中的所有service
             foreach($config['services'] as $k=>$name) {
                 $services[$name] = Service::newInstance($name);
                 $services[$name]->initialize();
             }
         } else {
-            $service =  Service::newInstance();
-            $service->initialize();
-            $services[] = $service;
-        }print_r($services);echo '<br>';
+            $services['demo'] = Service::newInstance();
+            $services['demo']->initialize();
+        }
         $template = Template::newInstance();
         $template->initialize();
 
@@ -108,9 +107,11 @@ abstract class Action extends Base {
      * @param Exception $e 异常对象,默认为空
      * @return Action
      */
-    public function dispatch() {//must return $this
+    public function dispatch($method) {//must return $this
 
-        if($dispatchkey) {
+        if($method) {
+            $dispatcher = $method;
+        } else if($dispatchkey) {
             $variable   = Scope::parseScope((is_numeric($scope) && $scope >= 0 && $scope <= 5)?$scope:0);
             $dispatcher = (array_key_exists($dispatchkey,$variable))?$_REQUEST[$dispatchkey]:false;
         } else {

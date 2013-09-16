@@ -65,7 +65,22 @@ abstract class Service extends Base {
     }
     
     public function initialize() {
+        $config = &$this->config;
         
+        //加载配置中的store
+        if(is_array($config) && array_key_exists('store', $config) && is_string($config['store'])) {
+            $this->store = Store::newInstance($config['store']);
+            $this->store->initialize();
+        } else {
+            $this->store = Store::newInstance();
+            $this->store->initialize();
+        }
+        //加载配置中的bean
+        if(is_array($config) && array_key_exists('bean', $config) && is_string($config['bean'])) {
+            $this->bean = Bean::newInstance($config['bean']);
+        } else {
+            $this->bean = Bean::newInstance();
+        }
     }
 }
 ?>

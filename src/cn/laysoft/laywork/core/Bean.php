@@ -219,7 +219,7 @@ abstract class Bean extends Base {
                 $proper = strtolower(substr($method, 3));
                 $index = array_search($proper, $lower);
                 if($index !== null) {
-                    return $this->{$properties[$keys[$index]]};
+                    return $this->{$keys[$index]};
                 } else {
                     return $this->{$proper};
                 }
@@ -227,7 +227,7 @@ abstract class Bean extends Base {
                 $proper = strtolower(substr($method, 3));
                 $index = array_search($proper, $lower);
                 if($index !== null) {
-                    $this->{$properties[$keys[$index]]} = $arguments[0];
+                    $this->{$keys[$index]} = $arguments[0];
                 } else {
                     $this->{$proper} = $arguments[0];
                 }

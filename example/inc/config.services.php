@@ -2,7 +2,7 @@
 return array(
     'services' => array(
         'in' => array(
-            'classname' => 'InService',
+            'classname' => 'cn\laysoft\laywork\demo\DemoService',
             'bean' => 'in',
             'store' => 'mysql'
         )

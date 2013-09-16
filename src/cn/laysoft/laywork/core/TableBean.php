@@ -113,7 +113,7 @@ abstract class TableBean extends Bean {
     public function toValues() {
         $mapping = $this->mapping();
         $values  = array();
-        foreach($this->toProperties() as $name) {
+        foreach($this->toArray() as $name=>$v) {
             $field          = array_key_exists($name, $mapping)?$mapping[$name]:$name;
             $values[$field] = $v;
         }

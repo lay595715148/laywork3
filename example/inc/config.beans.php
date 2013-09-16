@@ -2,7 +2,7 @@
 return array(
     'beans' => array(
         'in' => array(
-            'classname' => 'InBean'
+            'classname' => 'cn\laysoft\laywork\demo\DemoBean'
         )
     )
 );

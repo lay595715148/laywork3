@@ -7,10 +7,10 @@
  * @version: 0.0.1 (build 130911)
  */
 
-use cn\laysoft\laywork\core\Action;
-use cn\laysoft\laywork\core\Service;
-use cn\laysoft\laywork\core\Store;
-use cn\laysoft\laywork\core\Bean;
+use cn\laysoft\laywork\core\Action;//if using namespace
+//use cn\laysoft\laywork\core\Service;
+//use cn\laysoft\laywork\core\Store;
+//use cn\laysoft\laywork\core\Bean;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 global $_LAYWORKPATH,$_ROOTPATH;
@@ -23,7 +23,7 @@ $_ROOTPATH = $_LAYWORKPATH = str_replace("\\", "/", dirname(__DIR__));//Returns 
  * 
  * @author Lay Li
  */
-class Laywork {
+final class Laywork {
     /**
      * @staticvar debug
      */
@@ -48,10 +48,13 @@ class Laywork {
         'Scope' => '/cn/laysoft/laywork/core/Scope.class.php',
         'Service' => '/cn/laysoft/laywork/core/Service.class.php',
         'Store' => '/cn/laysoft/laywork/core/Store.class.php',
+        'Mysql' => '/cn/laysoft/laywork/core/Mysql.class.php',
         'TableBean' => '/cn/laysoft/laywork/core/TableBean.class.php',
         'Template' => '/cn/laysoft/laywork/core/Template.class.php',
         'DemoAction' => '/cn/laysoft/laywork/demo/DemoAction.class.php',
-        'DemoService' => '/cn/laysoft/laywork/demo/DemoService.class.php'
+        'DemoService' => '/cn/laysoft/laywork/demo/DemoService.class.php',
+        'DemoStore' => '/cn/laysoft/laywork/demo/DemoStore.class.php',
+        'DemoTemplate' => '/cn/laysoft/laywork/demo/DemoTemplate.class.php'
     );
     /**
      * set laywork path
@@ -77,7 +80,7 @@ class Laywork {
      */
     public static function initialize($debug = false) {
         spl_autoload_register('Laywork::autoload');
-        Laywork::$debug = $debug;
+        self::$debug = $debug;
     }
     /**
      * class autoload function
@@ -87,15 +90,15 @@ class Laywork {
     public static function autoload($classname) {
         global $_LAYWORKPATH;
         $_CLASSPATH = $_LAYWORKPATH.'/src';
-        $classes = &Laywork::$classes;
+        $classes = &self::$classes;
         $suffixes = array('.php','.class.php','.inc');
 
         if(array_key_exists($classname, $classes)) {//全名映射
             if(is_file($classes[$classname])) {
-                if(Laywork::$debug) echo 'require_once '.$classes[$classname].'<br>';
+                if(self::$debug) echo 'require_once '.$classes[$classname].'<br>';
                 require_once $classes[$classname];
             } else if(is_file($_CLASSPATH.$classes[$classname])) {
-                if(Laywork::$debug) echo 'require_once '.$_CLASSPATH.$classes[$classname].'<br>';
+                if(self::$debug) echo 'require_once '.$_CLASSPATH.$classes[$classname].'<br>';
                 require_once $_CLASSPATH.$classes[$classname];
             } else {
                 //TODO mapping is error
@@ -111,7 +114,7 @@ class Laywork {
                     $tmppath = $path.'/'.$name;
                     foreach($suffixes as $i=>$suffix) {
                         if(is_file($tmppath.$suffix)) {
-                            if(Laywork::$debug) echo 'require_once '.$tmppath.$suffix.'<br>';
+                            if(self::$debug) echo 'require_once '.$tmppath.$suffix.'<br>';
                             require_once $tmppath.$suffix;
                             $required = true;
                             break;
@@ -130,7 +133,7 @@ class Laywork {
                         echo $tmppath.'<br>';
                         foreach($suffixes as $i=>$suffix) {
                             if(is_file($tmppath.$suffix)) {
-                                if(Laywork::$debug) echo 'require_once '.$tmppath.$suffix.'<br>';
+                                if(self::$debug) echo 'require_once '.$tmppath.$suffix.'<br>';
                                 require_once $tmppath.$suffix;
                                 break 2;
                             }
@@ -139,7 +142,7 @@ class Laywork {
                     } else if($index == count($matches[1]) - 1) {
                         foreach($suffixes as $i=>$suffix) {
                             if(is_file($path.$suffix)) {
-                                if(Laywork::$debug) echo 'require_once '.$path.$suffix.'<br>';
+                                if(self::$debug) echo 'require_once '.$path.$suffix.'<br>';
                                 require_once $path.$suffix;
                                 break 2;
                             }
@@ -153,115 +156,152 @@ class Laywork {
         }
     }
     /**
+     * get configuration by key string
+     * @param $keystr key string, example: 'action.index'
+     * @param $default if nothing by $keystr,the default value
+     * @return mixed
+     */
+    public static function get($keystr, $default = null) {
+        $node = &self::$configuration;
+        if(is_string($keystr) && $keystr) {
+            $keys = explode('.', $keystr);
+            foreach($keys as $key) {
+                if(isset($node[$key])) {
+                    $node = &$node[$key];
+                } else {
+                    return $default;
+                }
+            }
+        }
+        return $node;
+    }
+    /**
+     * set configuration
+     * @param $name
+     * @param $value
+     * @return void
+     */
+    public static function set($keystr, $value){
+        //self::$configuration[$name] = $value;
+        
+        $node = &self::$configuration;
+        if(is_string($keystr) && $keystr) {
+            $keys = explode('.', $keystr);
+            $count = count($keys);
+            foreach($keys as $index=>$key) {
+                if(isset($node[$key]) && $index === $count - 1) {
+                    //TODO warning has been configured by this name
+                    $node[$key] = $value;
+                } else if(isset($node[$key])) {
+                    $node = &$node[$key];
+                } else if($index === $count - 1) {
+                    $node[$key] = $value;
+                } else {
+                    $node[$key] = array();
+                    $node = &$node[$key];
+                }
+            }
+        }
+    }
+    /**
      * configure an action
-     * @param $action
+     * @param $name
+     * @param $config
      * @return void
      */
     public static function action($name, $config) {
-        $actions = &Laywork::$configuration['actions'];
+        $actions = &self::get('actions');
+        //echo '<pre>';print_r($config);echo '</pre>';
         
         if(array_key_exists($name, $actions)) {
             //print_r($name);print_r($config);echo '<br>';
             //TODO warning has been configured by this name
-        } else {
-            if(Laywork::$debug) echo 'configure an action'.'<br>';
-            $actions[$name] = $config;
+        } else if(is_string($name) || is_numeric($name)) {
+            if(self::$debug) echo 'do_configure an action'.'<br>';
+            //$actions[$name] = $config;
+            self::set('actions.'.$name, $config);
             //TODO configure an action
         }
+        //echo '<pre>';print_r(self::get());echo '</pre>';
     }
     /**
      * configure a service
-     * @param $service
+     * @param $name
+     * @param $config
      * @return void
      */
     public static function service($name, $config) {
-        $services = &Laywork::$configuration['services'];
+        $services = &self::get('services');
         
         if(array_key_exists($name, $services)) {
             //TODO warning has been configured by this name
         } else {
-            if(Laywork::$debug) echo 'configure a service'.'<br>';
-            $services[$name] = $config;
+            if(self::$debug) echo 'do_configure a service'.'<br>';
+            //$services[$name] = $config;
+            self::set('services.'.$name, $config);
             //TODO configure a service
         }
     }
     /**
      * configure a store
-     * @param $store
+     * @param $name
+     * @param $config
      * @return void
      */
     public static function store($name, $config) {
-        $stores = &Laywork::$configuration['stores'];
+        $stores = &self::get('stores');
         
         if(array_key_exists($name, $stores)) {
             //TODO warning has been configured by this name
         } else {
-            if(Laywork::$debug) echo 'configure a store'.'<br>';
-            $stores[$name] = $config;
+            if(self::$debug) echo 'do_configure a store'.'<br>';
+            //$stores[$name] = $config;
+            self::set('stores.'.$name, $config);
             //TODO configure a store
         }
     }
     /**
      * configure a bean
-     * @param $bean
+     * @param $name
+     * @param $config
      * @return void
      */
     public static function bean($name, $config) {
-        $beans = &Laywork::$configuration['beans'];
+        $beans = &self::get('beans');
         $config = is_array($config)?$config:array();
         
         if(array_key_exists($name, $beans)) {
             //TODO warning has been configured by this name
         } else {
-            if(Laywork::$debug) echo 'configure a bean'.'<br>';
-            $beans[$name] = $config;
+            if(self::$debug) echo 'do_configure a bean'.'<br>';
+            //$beans[$name] = $config;
+            self::set('beans.'.$name, $config);
             //TODO configure a bean
         }
     }
     /**
      * get bean configuration by name
-     * @param $bean
+     * @param $name
      * @return array
      */
     public static function actionConfig($name) {
-        $actions = &Laywork::$configuration['actions'];
-        
-        if(array_key_exists($name, $actions)) {
-            return $actions[$name];
-        } else {
-            //TODO no action config by this name
-            return ;
-        }
+        return self::get('actions.'.$name);
     }
     /**
      * get bean configuration by name
-     * @param $bean
+     * @param $name
      * @return array
      */
     public static function serviceConfig($name) {
-        $services = &Laywork::$configuration['services'];
-        
-        if(array_key_exists($name, $services)) {
-            return $services[$name];
-        } else {
-            //TODO no action config by this name
-            return ;
-        }
+        return self::get('services.'.$name);
     }
     /**
      * get bean configuration by name
-     * @param $bean
+     * @param $name
      * @return array
      */
     public static function storeConfig($name) {
-        $stores = &Laywork::$configuration['stores'];
-        
-        if(array_key_exists($name, $stores)) {
-            return $stores[$name];
-        } else {
-            //TODO no action config by this name
-            return ;
-        }
+        return self::get('stores.'.$name);
     }
     /**
      * get bean configuration by name
@@ -269,14 +309,7 @@ class Laywork {
      * @return array
      */
     public static function beanConfig($name) {
-        $beans = &Laywork::$configuration['beans'];
-        
-        if(array_key_exists($name, $beans)) {
-            return $beans[$name];
-        } else {
-            //TODO no action config by this name
-            return ;
-        }
+        return self::get('beans.'.$name);
     }
     /**
      * laywork autorun configuration,all config file is load in $_ROOTPATH
@@ -287,63 +320,70 @@ class Laywork {
      */
     public static function configure($configuration, $isFile = true) {
         global $_ROOTPATH;
-        $configurations = &Laywork::$configuration;
+        $configurations = &self::$configuration;
         if(is_array($configuration) && !$isFile) {
             foreach($configuration as $key=>$item) {
-                switch($key) {
-                    case 'actions':
-                        if(is_array($item)) {
-                            foreach($item as $name=>$conf) {
-                                Laywork::action($name, $conf);
+                if(is_string($key) && $key) {//key is not null
+                    switch($key) {
+                        case 'actions':
+                            if(is_array($item)) {
+                                foreach($item as $name=>$conf) {
+                                    self::action($name, $conf);
+                                }
+                            } else {
+                                //TODO warning actions is not an array
                             }
-                        } else {
-                            //TODO warning actions is not an array
-                        }
-                        break;
-                    case 'services':
-                        if(is_array($item)) {
-                            foreach($item as $name=>$conf) {
-                                Laywork::service($name, $conf);
+                            break;
+                        case 'services':
+                            if(is_array($item)) {
+                                foreach($item as $name=>$conf) {
+                                    self::service($name, $conf);
+                                }
+                            } else {
+                                //TODO warning services is not an array
                             }
-                        } else {
-                            //TODO warning services is not an array
-                        }
-                        break;
-                    case 'stores':
-                        if(is_array($item)) {
-                            foreach($item as $name=>$conf) {
-                                Laywork::store($name, $conf);
+                            break;
+                        case 'stores':
+                            if(is_array($item)) {
+                                foreach($item as $name=>$conf) {
+                                    self::store($name, $conf);
+                                }
+                            } else {
+                                //TODO warning stores is not an array
                             }
-                        } else {
-                            //TODO warning stores is not an array
-                        }
-                        break;
-                    case 'beans':
-                        if(is_array($item)) {
-                            foreach($item as $name=>$conf) {
-                                Laywork::bean($name, $conf);
+                            break;
+                        case 'beans':
+                            if(is_array($item)) {
+                                foreach($item as $name=>$conf) {
+                                    self::bean($name, $conf);
+                                }
+                            } else {
+                                //TODO warning beans is not an array
                             }
-                        } else {
-                            //TODO warning beans is not an array
-                        }
-                        break;
-                    case 'files':
-                        if(is_array($item)) {
-                            foreach($item as $file) {
-                                Laywork::configure($file);
+                            break;
+                        case 'files':
+                            if(is_array($item)) {
+                                foreach($item as $file) {
+                                    self::configure($file);
+                                }
+                            } else {
+                                //TODO warning beans is not an array
                             }
-                        } else {
-                            //TODO warning beans is not an array
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        default:
+                            self::set($key, $item);
+                            //TODO default
+                            break;
+                    }
+                } else {
+                    self::set($key, $item);
+                    //TODO default
                 }
             }
         } else if(is_array($configuration)) {
             if(!empty($configuration)) {
                 foreach($configuration as $index=>$configfile) {
-                    Laywork::configure($configfile);
+                    self::configure($configfile);
                 }
             }
         } else {
@@ -356,9 +396,9 @@ class Laywork {
             }
             
             if(empty($tmparr)) {
-                Laywork::configure($tmparr);
+                self::configure($tmparr);
             } else {
-                Laywork::configure($tmparr, false);
+                self::configure($tmparr, false);
             }
         }
     }
@@ -369,7 +409,7 @@ class Laywork {
      * @param $params param array,default is empty
      */
     public static function start($action = '', $method = '', $params = '') {
-        Laywork::getInstance()->run($action, $method, $params);
+        self::getInstance()->run($action, $method, $params);
     }
     
     /**
@@ -389,14 +429,27 @@ class Laywork {
         }
         return self::$instance;
     }
+    /**
+     * run application
+     */
     public function run($action, $method, $params) {
         global $_LOADPATH,$_CLASSPATH,$_ROOTPATH,$_LAYWORKPATH;
-        echo '$_LOADPATH: '.$_LOADPATH.'<br>';
+        /*echo '$_LOADPATH: '.$_LOADPATH.'<br>';
         echo '$_CLASSPATH: '.$_CLASSPATH.'<br>';
         echo '$_ROOTPATH: '.$_ROOTPATH.'<br>';
-        echo '$_LAYWORKPATH: '.$_LAYWORKPATH.'<br>';
+        echo '$_LAYWORKPATH: '.$_LAYWORKPATH.'<br>';*/
         
-        Action::newInstance($action)->initialize()->dispatch()->tail();
+        
+        if(!is_string($action) || !$action) {
+            extract(pathinfo($_SERVER['PHP_SELF']));//generate $dirname,$basename, $extension, $filename
+            $obj = Action::newInstance($filename);
+        } else {
+            $obj = Action::newInstance($action);
+        }
+        
+        $obj->initialize();
+        $obj->dispatch($method);
+        $obj->tail();
         /*Service::newInstance();
         Store::newInstance();
         $m = Bean::newInstance();
@@ -404,4 +457,5 @@ class Laywork {
     }
 }
 
+class_alias('Laywork', 'W');//Layload class alias
 ?>

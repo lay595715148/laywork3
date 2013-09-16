@@ -2,7 +2,7 @@
 return array(
     'stores' => array(
         'mysql' => array(
-            'classname' => '\cn\laysoft\laywork\store\Mysql',
+            'classname' => 'cn\laysoft\laywork\core\Mysql',
             'host' => '127.0.0.1',
             'port' => 3306,
             'user' => 'lay',
