@@ -13,7 +13,7 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * mysql数据库访问类
  * @author Lay Li
  */
-final class Mysql extends Store {
+class Mysql extends Store {
     /**
      * @var mixed mysql数据库连接
      */
@@ -22,6 +22,9 @@ final class Mysql extends Store {
      * @var mixed mysql数据库操作结果
      */
     private $result;
+    /**
+     * 析构
+     */
     public function __destruct() {
         if($this->link) mysql_close($this->link);
     }
@@ -43,14 +46,16 @@ final class Mysql extends Store {
         $link   = &$this->link;
 
         $host = $config['host'];
-        $name = isset($config['username'])?$config['username']:$config['user'];
+        $user = isset($config['username'])?$config['username']:$config['user'];
         $password = $config['password'];
         $database = isset($config['database'])?$config['database']:$config['schema'];
         $forcenew = isset($config['forcenew'])?$config['forcenew']:false;
 
-        if($link = @mysql_connect($host, $name, $password, $forcenew)) {
+        if($link = @mysql_connect($host, $user, $password, $forcenew)) {
             if($database && !@mysql_select_db($database, $link)) {
                 throw new MysqlException('Cannot select mysql database:'.$database.'!');
+            } else {
+                //TODO no database selected
             }
         } else {
             throw new MysqlException('Cannot connect to mysql server:'.$host.'!');
@@ -78,10 +83,10 @@ final class Mysql extends Store {
         if(!$link) { $this->connect(); }
         
         if($encoding) {
-            mysql_query('SET NAMES '.$encoding,$link);
+            mysql_query('SET NAMES '.$encoding, $link);
         } else if($config['encoding']) {
             $encoding = &$config['encoding'];
-            mysql_query('SET NAMES '.$encoding,$link);
+            mysql_query('SET NAMES '.$encoding, $link);
         }
         if($showSQL) {
             echo '<pre>'.$sql.'</pre>';
@@ -90,7 +95,7 @@ final class Mysql extends Store {
             echo '<pre>'.$sql.'</pre>';
         }
         if($sql) {
-            $result = mysql_query($sql,$link);
+            $result = mysql_query($sql, $link);
         }
 
         return $result;
@@ -105,6 +110,7 @@ final class Mysql extends Store {
      * @return int|bool
      */
     public function insert($table, $fields = '', $values = '', $replace = false, $returnid = true) {
+        $link   = &$this->link;
         $result = &$this->result;
 
         $sql = $this->insertSQL($table, $fields, $values, $replace);
@@ -184,6 +190,7 @@ final class Mysql extends Store {
      * @return string
      */
     public function insertSQL($table, $fields = '', $values = '', $replace = false) {
+        if(!$table) { $table = $this->bean; }
         if(!($table instanceof TableBean)) { return false; }
 
         $tablename = $table->table();
@@ -208,6 +215,7 @@ final class Mysql extends Store {
      * @return string
      */
     public function deleteSQL($table, $condition = '') {
+        if(!$table) { $table = $this->bean; }
         if(!($table instanceof TableBean)) { return false; }
 
         $tablename = $table->table();
@@ -231,6 +239,7 @@ final class Mysql extends Store {
      * @return string
      */
     public function updateSQL($table, $fields = '', $values = '', $condition = '') {
+        if(!$table) { $table = $this->bean; }
         if(!($table instanceof TableBean)) { return false; }
 
         $tablename = $table->table();
@@ -263,6 +272,7 @@ final class Mysql extends Store {
      * @return string
      */
     public function selectSQL($table, $fields = '', $condition = '', $group = '', $order = '', $limit = '') {//$group is not useful
+        if(!$table) { $table = $this->bean; }
         if(!($table instanceof TableBean)) { return false; }
 
         $tablename = $table->table();
@@ -307,6 +317,7 @@ final class Mysql extends Store {
      * @return string
      */
     public function countSQL($table, $condition = '', $group = '') {
+        if(!$table) { $table = $this->bean; }
         if(!($table instanceof TableBean)) { return false; }
 
         $tablename = $table->table();
@@ -335,18 +346,12 @@ final class Mysql extends Store {
         $result = ($result)?$result:$this->result;
         if(!$result) {
             //TODO result is empty or null
-        } else if($count == 1) {
-            $rows = mysql_fetch_array($result, MYSQL_ASSOC);
         } else if($count != 0) {
             $i = 0;
             if(@mysql_num_rows($result)) {
-                while($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-                    if($i<$count) {
-                        $rows[$i] = (array)$row;
-                        $i++;
-                    } else {
-                        break;
-                    }
+                while($i < $count && $row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+                    $rows[$i] = (array)$row;
+                    $i++;
                 }
             }
         } else {
@@ -388,7 +393,7 @@ final class Mysql extends Store {
      * @param TableBean $table
      * @return string
      */
-    private function getClassByTable($table) {
+    protected function getClassByTable($table) {
         return get_class($table);
     }
     /**
@@ -397,7 +402,7 @@ final class Mysql extends Store {
      * @param string $table
      * @return string
      */
-    private function array2Field($arr, $table) {
+    protected function array2Field($arr, $table) {
         $str     = '';
         $count   = 0;
         $mapping = $table->mapping();
@@ -427,7 +432,7 @@ final class Mysql extends Store {
      * @param string $table
      * @return string
      */
-    private function array2Value($fields, $values, $table) {
+    protected function array2Value($fields, $values, $table) {
         $str     = '';
         $count   = 0;
         $mapping = $table->mapping();
@@ -455,7 +460,7 @@ final class Mysql extends Store {
      * @param array $table
      * @return string
      */
-    private function array2Setter($fields, $values, $table) {
+    protected function array2Setter($fields, $values, $table) {
         $str     = '';
         $count   = 0;
         $mapping = $table->mapping();
@@ -505,7 +510,7 @@ final class Mysql extends Store {
      * @param string $table
      * @return string
      */
-    private function array2Where($arr, $table) {
+    protected function array2Where($arr, $table) {
         $str     = '';
         $count   = 0;
         $mapping = $table->mapping();
@@ -545,7 +550,7 @@ final class Mysql extends Store {
      * @param string $table
      * @return string
      */
-    private function condition2Where($obj, $table) {
+    protected function condition2Where($obj, $table) {
         $str       = '';
         $mapping = $table->mapping();
         $orpos   = $obj->getOrpos();
@@ -587,7 +592,7 @@ final class Mysql extends Store {
      * @param string $table
      * @return string
      */
-    private function array2Order($arr, $table) {
+    protected function array2Order($arr, $table) {
         $str     = '';
         $mapping = $table->mapping();
         foreach($arr as $k=>$or) {
@@ -620,7 +625,7 @@ final class Mysql extends Store {
      * @param string $table
      * @return string
      */
-    private function arrange2Order($obj, $table) {
+    protected function arrange2Order($obj, $table) {
         $str     = '';
         $mapping = $table->mapping();
         $order   = $obj->getOrder();

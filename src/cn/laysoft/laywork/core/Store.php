@@ -24,18 +24,18 @@ abstract class Store extends Base {
      * @param $config default is empty
      * @return Store
      */
-    public static function newInstance($name, $config = '') {
+    public static function newInstance($name, $bean = null, $config = '') {
         $config = is_array($config)?$config:Laywork::storeConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoStore';
         
         if(!isset(self::$instances[$name])) {
             if(isset($config['classname'])) {
-                self::$instances[$name] = new $classname($config);
+                self::$instances[$name] = new $classname($config, $bean);
             } else {
-                self::$instances[$name] = new DemoStore($config);
+                self::$instances[$name] = new DemoStore($config, $bean);
             }
             if(!(self::$instances[$name] instanceof Store)) {
-                self::$instances[$name] = new DemoStore($config);
+                self::$instances[$name] = new DemoStore($config, $bean);
             }
         }
         return self::$instances[$name];
@@ -47,11 +47,17 @@ abstract class Store extends Base {
      */
     protected $config;
     /**
+     * @var TableBean 默认使用到的数据模型
+     */
+    protected $bean;
+    /**
      * 构造方法
      * @param array $config 配置信息数组
+     * @param Bean $config 配置信息数组
      */
-    protected function __construct($config = '') {
+    protected function __construct($config = '', $bean = null) {
         $this->config = $config;
+        $this->bean = $bean;
     }
     /**
      * 初始化
