@@ -17,6 +17,7 @@ Layload::loadpath(__DIR__);
 Layload::classpath(__DIR__.'/src');
 Layload::configure('/inc/classes.laywork.php');
 
+require_once __DIR__.'/src/Laywork.php';
 Laywork::initialize(true);
 Laywork::rootpath(dirname(__DIR__));
 ?>

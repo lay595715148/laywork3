@@ -18,6 +18,8 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * @abstract
  */
 abstract class Action extends Base {
+    const DISPATCH_KEY = 'a';
+    const DISPATCH_STYLE = '*';
     /**
      * @staticvar action instance
      */
@@ -62,16 +64,11 @@ abstract class Action extends Base {
      */
     protected $template;
     /**
-     * @var array 访问路径信息数据
-     */
-    protected $pathinfo = array();
-    /**
      * 构造方法
      * @param array $config
      */
     protected function __construct($config = '') {
         $this->config = $config;
-        $this->pathinfo = pathinfo($_SERVER['PHP_SELF']);
     }
     /**
      * 初始化
@@ -107,7 +104,9 @@ abstract class Action extends Base {
      * @param Exception $e 异常对象,默认为空
      * @return Action
      */
-    public function dispatch($method) {//must return $this
+    public function dispatch($method, $params) {//must return $this
+        $dispatchkey = Laywork::get('dispatch-key') || Action::DISPATCH_KEY;
+        $dispatchstyle = Laywork::get('dispatch-style') || Action::DISPATCH_STYLE;
 
         if($method) {
             $dispatcher = $method;
@@ -119,13 +118,13 @@ abstract class Action extends Base {
             $dispatcher = $ext['filename'];
         }
         if($dispatcher) {
-            $method = str_replace('*',$dispatcher,$style);
+            $method = str_replace('*', $dispatcher, $dispatchstyle);
         }
 
         if(method_exists($this,$method) && $method != 'init' && $method != 'tail' && $method != 'dispatch' && substr($method,0,2) != '__') {
-            $this->$method();
+            $this->$method($params);
         } else {
-            $this->launch();
+            $this->launch($params);
         }
         
         return $this;
@@ -135,8 +134,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function tail() {//must return $this
-        $ext = &$this->pathinfo;
-        $extension = array_key_exists('extension',$ext)?$ext['extension']:'';
+        extract(pathinfo($_SERVER['PHP_SELF']));
         switch($extension) {
             case 'json':
                 $this->template->header('Content-Type: application/json');

@@ -81,13 +81,6 @@ abstract class Template extends Base {
      * 初始化
      */
     public function initialize() {//must return $this
-        global $_CFG,$_SRCPath;
-        $lang = &$_CFG['language'];
-        $langs = &$_CFG['languages'];
-        if($lang && array_key_exists($lang,$langs) && file_exists($_SRCPath.$langs[$lang])) {
-            include $_SRCPath.$langs[$lang];
-        }
-        
         return $this;
     }
     /**
@@ -106,15 +99,15 @@ abstract class Template extends Base {
      */
     public function title($str, $append = false) {
         $vars  = &$this->vars;
-		$title = isset($vars['title'])?$vars['title']:false;
-		if(!$title || $append === false) {
-			$vars['title'] = $str;
-		} else if($append && $append === 1) {
-			$vars['title'] = $title.$str;
-		} else {
-			$vars['title'] = $str.$title;
-		}
-	}
+        $title = isset($vars['title'])?$vars['title']:false;
+        if(!$title || $append === false) {
+            $vars['title'] = $str;
+        } else if($append && $append === 1) {
+            $vars['title'] = $title.$str;
+        } else {
+            $vars['title'] = $str.$title;
+        }
+    }
     /**
      * push variables with a name
      * @param string $name name of variable
@@ -133,14 +126,14 @@ abstract class Template extends Base {
     }
     /**
      * set include theme template file path
-     * @param string $filepath template file path
+     * @param string $filepath template file path, relative template theme directory
      */
     public function template($filepath) {
-        global $_CFG,$_SRCPath;
-        $theme = &$_CFG['theme']['theme-use'];
-        $themes = &$_CFG['themes'];
-        if(array_key_exists($theme,$themes)) {
-            $this->file = $_SRCPath.$_CFG['theme']['theme-dir'].$themes[$theme]['tpl'].$filepath;
+        global $_ROOTPATH;
+        $themes = Laywork::get('themes');
+        $theme = Laywork::get('theme');
+        if(array_key_exists($theme, $themes)) {
+            $this->file = $_ROOTPATH.$themes[$theme]['dir'].$filepath;
         } else {
             $this->file = $filepath;
         }
@@ -207,7 +200,7 @@ abstract class Template extends Base {
     public function json() {
         $headers      = &$this->headers;
         $templateVars = &$this->vars;
-		$templateVars = array_diff_key($templateVars,array('title'=>1));
+        $templateVars = array_diff_key($templateVars,array('title'=>1));
         foreach($headers as $header) {
             header($header);
         }
@@ -219,7 +212,7 @@ abstract class Template extends Base {
     public function xml() {
         $headers      = &$this->headers;
         $templateVars = &$this->vars;
-		$templateVars = array_diff_key($templateVars,array('title'=>1));
+        $templateVars = array_diff_key($templateVars,array('title'=>1));
         foreach($headers as $header) {
             header($header);
         }
@@ -229,7 +222,6 @@ abstract class Template extends Base {
      * output as template
      */
     public function out() {
-        global $_SRCPath,$_CFG,$_LAN;
         $templateVars = &$this->vars;
         $templateFile = &$this->file;
         $metas        = &$this->metas;

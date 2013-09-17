@@ -42,22 +42,24 @@ final class Laywork {
      * @staticvar all class mappings
      */
     public static $classes = array(
-        'Base' => '/cn/laysoft/laywork/core/Base.class.php',
-        'Bean' => '/cn/laysoft/laywork/core/Bean.class.php',
-        'Action' => '/cn/laysoft/laywork/core/Action.class.php',
-        'Scope' => '/cn/laysoft/laywork/core/Scope.class.php',
-        'Service' => '/cn/laysoft/laywork/core/Service.class.php',
-        'Store' => '/cn/laysoft/laywork/core/Store.class.php',
-        'Mysql' => '/cn/laysoft/laywork/core/Mysql.class.php',
-        'Arrange' => '/cn/laysoft/laywork/core/Arrange.class.php',
-        'Cell' => '/cn/laysoft/laywork/core/Cell.class.php',
-        'Condition' => '/cn/laysoft/laywork/core/Condition.class.php',
-        'TableBean' => '/cn/laysoft/laywork/core/TableBean.class.php',
-        'Template' => '/cn/laysoft/laywork/core/Template.class.php',
-        'DemoAction' => '/cn/laysoft/laywork/demo/DemoAction.class.php',
-        'DemoService' => '/cn/laysoft/laywork/demo/DemoService.class.php',
-        'DemoStore' => '/cn/laysoft/laywork/demo/DemoStore.class.php',
-        'DemoTemplate' => '/cn/laysoft/laywork/demo/DemoTemplate.class.php'
+        'Base' => '/cn/laysoft/laywork/core-PHP5.2/Base.class.php',
+        'Bean' => '/cn/laysoft/laywork/core-PHP5.2/Bean.class.php',
+        'Action' => '/cn/laysoft/laywork/core-PHP5.2/Action.class.php',
+        'Scope' => '/cn/laysoft/laywork/core-PHP5.2/Scope.class.php',
+        'Service' => '/cn/laysoft/laywork/core-PHP5.2/Service.class.php',
+        'Store' => '/cn/laysoft/laywork/core-PHP5.2/Store.class.php',
+        'Mysql' => '/cn/laysoft/laywork/core-PHP5.2/Mysql.class.php',
+        'Arrange' => '/cn/laysoft/laywork/core-PHP5.2/Arrange.class.php',
+        'Cell' => '/cn/laysoft/laywork/core-PHP5.2/Cell.class.php',
+        'Condition' => '/cn/laysoft/laywork/core-PHP5.2/Condition.class.php',
+        'TableBean' => '/cn/laysoft/laywork/core-PHP5.2/TableBean.class.php',
+        'Template' => '/cn/laysoft/laywork/core-PHP5.2/Template.class.php',
+        'Parser' => '/cn/laysoft/laywork/core-PHP5.2/Parser.class.php',
+        'DemoAction' => '/cn/laysoft/laywork/demo-PHP5.2/DemoAction.class.php',
+        'DemoBean' => '/cn/laysoft/laywork/demo-PHP5.2/DemoBean.class.php',
+        'DemoService' => '/cn/laysoft/laywork/demo-PHP5.2/DemoService.class.php',
+        'DemoStore' => '/cn/laysoft/laywork/demo-PHP5.2/DemoStore.class.php',
+        'DemoTemplate' => '/cn/laysoft/laywork/demo-PHP5.2/DemoTemplate.class.php'
     );
     /**
      * set laywork path
@@ -451,7 +453,7 @@ final class Laywork {
         }
         
         $obj->initialize();
-        $obj->dispatch($method);
+        $obj->dispatch($method, $params);
         $obj->tail();
         /*Service::newInstance();
         Store::newInstance();
