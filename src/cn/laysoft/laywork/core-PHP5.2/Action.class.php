@@ -15,6 +15,8 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * @abstract
  */
 abstract class Action extends Base {
+    const DISPATCH_KEY = 'a';
+    const DISPATCH_STYLE = '*';
     /**
      * @staticvar action instance
      */
@@ -59,16 +61,11 @@ abstract class Action extends Base {
      */
     protected $template;
     /**
-     * @var array 访问路径信息数据
-     */
-    protected $pathinfo = array();
-    /**
      * 构造方法
      * @param array $config
      */
     protected function __construct($config = '') {
         $this->config = $config;
-        $this->pathinfo = pathinfo($_SERVER['PHP_SELF']);
     }
     /**
      * 初始化
@@ -79,17 +76,16 @@ abstract class Action extends Base {
         $services    = &$this->services;
         $template    = &$this->template;
 
+        //加载配置中的所有service
         if(is_array($config) && array_key_exists('services',$config) && $config['services'] && is_array($config['services'])) {
-            //加载配置中的所有service
             foreach($config['services'] as $k=>$name) {
                 $services[$name] = Service::newInstance($name);
                 $services[$name]->initialize();
             }
         } else {
-            $service =  Service::newInstance();
-            $service->initialize();
-            $services[] = $service;
-        }print_r($services);echo '<br>';
+            $services['demo'] = Service::newInstance();
+            $services['demo']->initialize();
+        }
         $template = Template::newInstance();
         $template->initialize();
 
@@ -105,9 +101,13 @@ abstract class Action extends Base {
      * @param Exception $e 异常对象,默认为空
      * @return Action
      */
-    public function dispatch() {//must return $this
+    public function dispatch($method, $params) {//must return $this
+        $dispatchkey = Laywork::get('dispatch-key') || Action::DISPATCH_KEY;
+        $dispatchstyle = Laywork::get('dispatch-style') || Action::DISPATCH_STYLE;
 
-        if($dispatchkey) {
+        if($method) {
+            $dispatcher = $method;
+        } else if($dispatchkey) {
             $variable   = Scope::parseScope((is_numeric($scope) && $scope >= 0 && $scope <= 5)?$scope:0);
             $dispatcher = (array_key_exists($dispatchkey,$variable))?$_REQUEST[$dispatchkey]:false;
         } else {
@@ -115,13 +115,13 @@ abstract class Action extends Base {
             $dispatcher = $ext['filename'];
         }
         if($dispatcher) {
-            $method = str_replace('*',$dispatcher,$style);
+            $method = str_replace('*', $dispatcher, $dispatchstyle);
         }
 
         if(method_exists($this,$method) && $method != 'init' && $method != 'tail' && $method != 'dispatch' && substr($method,0,2) != '__') {
-            $this->$method();
+            $this->$method($params);
         } else {
-            $this->launch();
+            $this->launch($params);
         }
         
         return $this;
@@ -131,8 +131,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function tail() {//must return $this
-        $ext = &$this->pathinfo;
-        $extension = array_key_exists('extension',$ext)?$ext['extension']:'';
+        extract(pathinfo($_SERVER['PHP_SELF']));
         switch($extension) {
             case 'json':
                 $this->template->header('Content-Type: application/json');

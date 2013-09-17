@@ -3,10 +3,9 @@
  * 核心基础类
  * @see https://github.com/lay595715148/laywork3
  * 
- * @author liaiyong<595715148@qq.com>
- * @Version: 0.0.1 (build 130911)
+ * @author Lay Li
+ * @version: 0.0.1 (build 130911)
  */
-
 if(!defined('INIT_LAYWORK')) { exit; }
 
 /**

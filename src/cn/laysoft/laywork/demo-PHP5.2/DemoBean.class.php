@@ -16,24 +16,37 @@ class DemoBean extends TableBean {
         ));
     }
     public function table() {
-        return 'lay_m';
+        return '`laysoft`.`lay_demo`';
     }
     public function columns() {
         return array(
             'id' => 'integer',
             'name' => 'string',
-            'datetime' => 'datetime'
+            'datetime' => 'datetime',
+            'type' => 'integer'
         );
     }
     public function mapping() {
         return array(
             'id' => 'id',
             'name' => 'name',
-            'datetime' => 'datetime'
+            'datetime' => 'datetime',
+            'type' => 'type'
         );
     }
     public function pk() {
         return 'id';
+    }
+    public function toInsertFields() {
+        $mapping = $this->mapping();
+        $fields  = array();
+        foreach($this->toProperties() as $name) {
+            if($name == $this->pk()) continue;
+            if($name == 'datetime') continue;
+            
+            $fields[] = array_key_exists($name, $mapping)?$mapping[$name]:$name;
+        }
+        return $fields;
     }
     public function otherFormat($value, $propertype) {
         if(is_numeric($value)) {

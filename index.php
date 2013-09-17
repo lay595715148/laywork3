@@ -5,7 +5,7 @@ include_once __DIR__.'/bootstrap.php';
 //Layload::rootpath(dirname(__DIR__));
 //Layload::classpath(dirname(__DIR__));
 
-Laywork::configure('/laywork/example/inc/config.files.php');
+Laywork::configure('/laywork/example/inc/config.files.php');//-PHP5.2
 /*
 print_r(json_encode(Laywork::$configuration));echo '<br>';
 */

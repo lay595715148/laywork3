@@ -4,12 +4,6 @@
  * @author Lay Li
  * @version: 0.0.1 (build 130911)
  */
-namespace cn\laysoft\laywork\core;
-use Laywork;
-use PDO;
-use PDOStatement;
-use PDOException;
-use Exception;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 class PdoStore extends Mysql {

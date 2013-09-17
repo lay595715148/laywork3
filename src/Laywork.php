@@ -49,6 +49,7 @@ final class Laywork {
         'Service' => '/cn/laysoft/laywork/core-PHP5.2/Service.class.php',
         'Store' => '/cn/laysoft/laywork/core-PHP5.2/Store.class.php',
         'Mysql' => '/cn/laysoft/laywork/core-PHP5.2/Mysql.class.php',
+        'PdoStore' => '/cn/laysoft/laywork/core-PHP5.2/PdoStore.class.php',
         'Arrange' => '/cn/laysoft/laywork/core-PHP5.2/Arrange.class.php',
         'Cell' => '/cn/laysoft/laywork/core-PHP5.2/Cell.class.php',
         'Condition' => '/cn/laysoft/laywork/core-PHP5.2/Condition.class.php',
