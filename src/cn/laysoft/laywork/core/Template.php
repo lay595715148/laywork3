@@ -6,7 +6,7 @@
  */
 namespace cn\laysoft\laywork\core;
 use cn\laysoft\laywork\demo\DemoTemplate;
-use Laywork;
+use Laywork,Debugger;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 /**
@@ -25,6 +25,8 @@ abstract class Template extends Base {
      * @return Action
      */
     public static function newInstance($config = '') {
+        Debugger::info('Template', "new template(DemoTemplate) instance", __CLASS__, __METHOD__, __LINE__);
+        
         if(self::$instance == null) {
             self::$instance = new DemoTemplate($config);
         }
@@ -81,6 +83,7 @@ abstract class Template extends Base {
      * 初始化
      */
     public function initialize() {//must return $this
+        Debugger::info('Template', 'initialize', __CLASS__, __METHOD__, __LINE__);
         return $this;
     }
     /**

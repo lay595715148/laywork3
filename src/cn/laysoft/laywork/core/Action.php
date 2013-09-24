@@ -8,7 +8,7 @@
  */
 namespace cn\laysoft\laywork\core;
 use cn\laysoft\laywork\demo\DemoAction;
-use Laywork;
+use Laywork,Debugger;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 /**
@@ -33,6 +33,7 @@ abstract class Action extends Base {
     public static function newInstance($name, $config = '') {
         $config = is_array($config)?$config:Laywork::actionConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoAction';
+        Debugger::info('Action', "new action($classname) instance", __CLASS__, __METHOD__, __LINE__);
         
         if(self::$instance == null) {
             if(isset($config['classname'])) {
@@ -75,6 +76,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function initialize() {//must return $this
+        Debugger::info('Action', "initialize", __CLASS__, __METHOD__, __LINE__);
         $config      = &$this->config;
         $services    = &$this->services;
         $template    = &$this->template;

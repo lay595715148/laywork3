@@ -6,7 +6,7 @@
  */
 namespace cn\laysoft\laywork\core;
 use cn\laysoft\laywork\demo\DemoStore;
-use Laywork;
+use Laywork,Debugger;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 /**
@@ -27,6 +27,7 @@ abstract class Store extends Base {
     public static function newInstance($name, $bean = null, $config = '') {
         $config = is_array($config)?$config:Laywork::storeConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoStore';
+        Debugger::info('Store', "new store($classname) instance", __CLASS__, __METHOD__, __LINE__);
         
         if(!isset(self::$instances[$name])) {
             if(isset($config['classname'])) {
@@ -63,6 +64,7 @@ abstract class Store extends Base {
      * 初始化
      */
     public function initialize() {
+        Debugger::info('Store', 'initialize', __CLASS__, __METHOD__, __LINE__);
         return $this;
     }
 }

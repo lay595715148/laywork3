@@ -5,7 +5,7 @@
  * @version: 0.0.1 (build 130911)
  */
 namespace cn\laysoft\laywork\core;
-use Laywork;
+use Laywork,Debugger;
 use Exception;
 if(!defined('INIT_LAYWORK')) { exit; }
 
@@ -17,11 +17,11 @@ class Mysql extends Store {
     /**
      * @var mixed mysql数据库连接
      */
-    private $link;
+    protected $link;
     /**
      * @var mixed mysql数据库操作结果
      */
-    private $result;
+    protected $result;
     /**
      * 析构
      */
@@ -36,12 +36,14 @@ class Mysql extends Store {
         if(isset($this->config['lazy']) && !$this->config['lazy']) {
             $this->connect();
         }
-        return $this;
+        return parent::initialize();
     }
     /**
      * 打开mysql数据库连接
      */
     public function connect() {
+        Debugger::info('Mysql', 'connect', __CLASS__, __METHOD__, __LINE__);
+        
         $config = &$this->config;
         $link   = &$this->link;
 
@@ -77,6 +79,7 @@ class Mysql extends Store {
      * @return mixed
      */
     public function query($sql, $encoding = '', $showSQL = false) {
+        Debugger::info('Mysql', 'query', __CLASS__, __METHOD__, __LINE__);
         $config = &$this->config;
         $result = &$this->result;
         $link   = &$this->link;
@@ -89,10 +92,12 @@ class Mysql extends Store {
             mysql_query('SET NAMES '.$encoding, $link);
         }
         if($showSQL) {
-            echo '<pre>'.$sql.'</pre>';
+            //echo '<pre>'.$sql.'</pre>';
+            Debugger::info('Mysql', 'showsql:'.$sql, __CLASS__, __METHOD__, __LINE__);
         } else if($config['showsql']) {
             $encoding = &$config['showsql'];
-            echo '<pre>'.$sql.'</pre>';
+            //echo '<pre>'.$sql.'</pre>';
+            Debugger::info('Mysql', 'showsql:'.$sql, __CLASS__, __METHOD__, __LINE__);
         }
         if($sql) {
             $result = mysql_query($sql, $link);
@@ -114,6 +119,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->insertSQL($table, $fields, $values, $replace);
+        Debugger::info('Mysql', 'insert', __CLASS__, __METHOD__, __LINE__);
         $result = $this->query($sql);
 
         return ($returnid)?mysql_insert_id($link):$result;
@@ -128,6 +134,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->deleteSQL($table, $condition);
+        Debugger::info('Mysql', 'delete', __CLASS__, __METHOD__, __LINE__);
         $result = $this->query($sql);
 
         return $result;
@@ -144,6 +151,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->updateSQL($table, $fields, $values, $condition);
+        Debugger::info('Mysql', 'update', __CLASS__, __METHOD__, __LINE__);
         $result = $this->query($sql);
 
         return $result;
@@ -162,6 +170,7 @@ class Mysql extends Store {
         $result = &$this->result;
         
         $sql = $this->selectSQL($table, $fields, $condition, $group, $order, $limit);
+        Debugger::info('Mysql', 'select', __CLASS__, __METHOD__, __LINE__);
         $result = $this->query($sql);
 
         return $result;

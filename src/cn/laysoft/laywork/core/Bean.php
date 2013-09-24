@@ -8,7 +8,7 @@
  */
 namespace cn\laysoft\laywork\core;
 use cn\laysoft\laywork\demo\DemoBean;
-use Laywork;
+use Laywork,Debugger;
 use Exception;
 if(!defined('INIT_LAYWORK')) { exit; }
 
@@ -28,6 +28,7 @@ abstract class Bean extends Base {
     public static function newInstance($name) {
         $config = is_array($config)?$config:Laywork::beanConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoBean';
+        Debugger::info('Bean', "new bean($classname) instance", __CLASS__, __METHOD__, __LINE__);
         
         if(isset($config['classname'])) {
             $instance = new $classname();
