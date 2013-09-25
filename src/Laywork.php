@@ -451,7 +451,7 @@ final class Laywork {
      * run application
      */
     public function run($action, $method, $params) {
-        global $_LOADPATH,$_CLASSPATH,$_ROOTPATH,$_LAYWORKPATH;        
+        //global $_LOADPATH, $_CLASSPATH, $_ROOTPATH, $_LAYWORKPATH;        
         
         if(!is_string($action) || !$action) {
             //generate $dirname,$basename, $extension, $filename
@@ -499,73 +499,68 @@ class Debugger {
         }
     }
     public static function debug($tag, $msg, $classname = '', $method = '', $line = '') {
-        if(self::$out === true || (self::$out && in_array(self::$out, array(1, 3, 5, 7, 9, 11, 13, 15)))) self::pre($tag, self::DEBUG_LEVEL_DEBUG, $msg, $classname, $method, $line);
-        if(self::$log === true || (self::$log && in_array(self::$log, array(1, 3, 5, 7, 9, 11, 13, 15)))) self::log($tag, self::DEBUG_LEVEL_DEBUG, json_encode($msg), $classname, $method, $line);
+        if(self::$out === true || (self::$out && in_array(self::$out, array(1, 3, 5, 7, 9, 11, 13, 15)))) {
+            self::pre($tag, self::DEBUG_LEVEL_DEBUG, $msg, $classname, $method, $line);
+        }
+        if(self::$log === true || (self::$log && in_array(self::$log, array(1, 3, 5, 7, 9, 11, 13, 15)))) {
+            self::log($tag, self::DEBUG_LEVEL_DEBUG, json_encode($msg), $classname, $method, $line);
+        }
     }
     public static function info($tag, $msg, $classname = '', $method = '', $line = '') {
-        if(self::$out === true || (self::$out && in_array(self::$out, array(2, 3, 6, 7, 10, 11, 14, 15)))) self::out($tag, self::DEBUG_LEVEL_INFO, $msg, $classname, $method, $line);
-        if(self::$log === true || (self::$log && in_array(self::$log, array(2, 3, 6, 7, 10, 11, 14, 15)))) self::log($tag, self::DEBUG_LEVEL_INFO, $msg, $classname, $method, $line);
+        if(self::$out === true || (self::$out && in_array(self::$out, array(2, 3, 6, 7, 10, 11, 14, 15)))) {
+            self::out($tag, self::DEBUG_LEVEL_INFO, $msg, $classname, $method, $line);
+        }
+        if(self::$log === true || (self::$log && in_array(self::$log, array(2, 3, 6, 7, 10, 11, 14, 15)))) {
+            self::log($tag, self::DEBUG_LEVEL_INFO, $msg, $classname, $method, $line);
+        }
     }
     public static function warning($tag, $msg, $classname = '', $method = '', $line = '') {
-        if(self::$out === true || (self::$out && in_array(self::$out, array(4, 5, 6, 7, 12, 13, 14, 15)))) self::out($tag, self::DEBUG_LEVEL_WARN, $msg, $classname, $method, $line);
-        if(self::$log === true || (self::$log && in_array(self::$log, array(4, 5, 6, 7, 12, 13, 14, 15)))) self::log($tag, self::DEBUG_LEVEL_WARN, $msg, $classname, $method, $line);
+        if(self::$out === true || (self::$out && in_array(self::$out, array(4, 5, 6, 7, 12, 13, 14, 15)))) {
+            self::out($tag, self::DEBUG_LEVEL_WARN, $msg, $classname, $method, $line);
+        }
+        if(self::$log === true || (self::$log && in_array(self::$log, array(4, 5, 6, 7, 12, 13, 14, 15)))) {
+            self::log($tag, self::DEBUG_LEVEL_WARN, $msg, $classname, $method, $line);
+        }
     }
     public static function warn($tag, $msg, $classname = '', $method = '', $line = '') {
         self::warning($tag, $msg, $classname, $method, $line);
     }
     public static function error($tag, $msg, $classname = '', $method = '', $line = '') {
-        if(self::$out === true || (self::$out && in_array(self::$out, array(8, 9, 10, 11, 12, 13, 14, 15)))) self::out($tag, self::DEBUG_LEVEL_ERROR, $msg, $classname, $method, $line);
-        if(self::$log === true || (self::$log && in_array(self::$log, array(8, 9, 10, 11, 12, 13, 14, 15)))) self::log($tag, self::DEBUG_LEVEL_ERROR, $msg, $classname, $method, $line);
+        echo 'once start<br>';
+        if(self::$out === true || (self::$out && in_array(self::$out, array(8, 9, 10, 11, 12, 13, 14, 15)))) {
+            self::out($tag, self::DEBUG_LEVEL_ERROR, $msg, $classname, $method, $line);
+        }
+        echo 'once middle<br>';
+        if(self::$log === true || (self::$log && in_array(self::$log, array(8, 9, 10, 11, 12, 13, 14, 15)))) {
+            self::log($tag, self::DEBUG_LEVEL_ERROR, $msg, $classname, $method, $line);
+        }
+        echo 'once end<br>';
     }
     
     public static function log($tag = '', $lv = 1, $msg = '', $classname = '', $method = '', $line = '') {
         if(!$method) $method = $classname;
-        switch($lv) {
-            case self::DEBUG_LEVEL_DEBUG:
-                $lv = 'DEBUG';
-                break;
-            case self::DEBUG_LEVEL_INFO:
-                $lv = 'INFO';
-                break;
-            case self::DEBUG_LEVEL_WARN:
-                $lv = 'WARN';
-                break;
-            case self::DEBUG_LEVEL_ERROR:
-                $lv = 'ERROR';
-                break;
-            default:
-                $lv = 'DEBUG';
-                break;
-        }
+        $lv = self::parseLevel($lv);
         $ip = self::ip();
         syslog(LOG_INFO, date('Y-m-d H:i:s').'.'.floor(microtime()*1000)." $ip LAYWORK [$lv] [$tag] $method:$line $msg");
     }
     public static function out($tag = '', $lv = 1, $msg = '', $classname = '', $method = '', $line = '') {
         if(!$method) $method = $classname;
-        switch($lv) {
-            case self::DEBUG_LEVEL_DEBUG:
-                $lv = 'DEBUG';
-                break;
-            case self::DEBUG_LEVEL_INFO:
-                $lv = 'INFO';
-                break;
-            case self::DEBUG_LEVEL_WARN:
-                $lv = 'WARN';
-                break;
-            case self::DEBUG_LEVEL_ERROR:
-                $lv = 'ERROR';
-                break;
-            default:
-                $lv = 'DEBUG';
-                break;
-        }
+        $lv = self::parseLevel($lv);
         $ip = self::ip();
         echo '<pre style="padding:0px;margin:0px;border:0px;">';
         echo date('Y-m-d H:i:s').'.'.floor(microtime()*1000)." $ip [$lv] [$tag] $method:$line $msg\r\n";
         echo '</pre>';
     }
-    public static function pre($tag = '', $lv = 0x1000, $msg = '', $classname = '', $method = '', $line = '') {
+    public static function pre($tag = '', $lv = 1, $msg = '', $classname = '', $method = '', $line = '') {
         if(!$method) $method = $classname;
+        $lv = self::parseLevel($lv);
+        $ip = self::ip();
+        echo '<pre style="padding:0px;margin:0px;border:0px;">';
+        echo date('Y-m-d H:i:s').'.'.floor(microtime()*1000)." $ip [$lv] [$tag] $method:$line\r\n";
+        print_r($msg);
+        echo '</pre>';
+    }
+    public static function parseLevel($lv) {
         switch($lv) {
             case self::DEBUG_LEVEL_DEBUG:
                 $lv = 'DEBUG';
@@ -579,15 +574,20 @@ class Debugger {
             case self::DEBUG_LEVEL_ERROR:
                 $lv = 'ERROR';
                 break;
-            default:
-                $lv = 'DEBUG';
+            case 'DEBUG':
+                $lv = self::DEBUG_LEVEL_DEBUG;
+                break;
+            case 'INFO':
+                $lv = self::DEBUG_LEVEL_INFO;
+                break;
+            case 'WARN':
+                $lv = self::DEBUG_LEVEL_WARN;
+                break;
+            case 'ERROR':
+                $lv = self::DEBUG_LEVEL_ERROR;
                 break;
         }
-        $ip = self::ip();
-        echo '<pre style="padding:0px;margin:0px;border:0px;">';
-        echo date('Y-m-d H:i:s').'.'.floor(microtime()*1000)." $ip [$lv] [$tag] $method:$line\r\n";
-        print_r($msg);
-        echo '</pre>';
+        return $lv;
     }
     public static function ip() {
         if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
@@ -603,7 +603,7 @@ class Debugger {
     }
 }
 
-class_alias('Debugger', 'D');//Layload class alias
+//class_alias('Debugger', 'D');//Layload class alias
 
 class AutoloadException extends Exception {}
 ?>

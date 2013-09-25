@@ -107,6 +107,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function dispatch($method, $params) {//must return $this
+        Debugger::info('Action', "dispatch", __CLASS__, __METHOD__, __LINE__);
         $dispatchkey = Laywork::get('dispatch-key') || Action::DISPATCH_KEY;
         $dispatchstyle = Laywork::get('dispatch-style') || Action::DISPATCH_STYLE;
 
