@@ -6,9 +6,11 @@ if(!defined('INIT_LAYWORK')) { exit; }
 
 class DemoAction extends Action {
     public function launch() {
-        Debugger::debug('DemoAction', spl_autoload_functions());
+        Debugger::debug('DemoAction', spl_autoload_functions(), __CLASS__, __METHOD__, __LINE__);
         //$ret = $this->services['in']->doit();
-        throw new Exception('test exception');
+        //throw new Exception('test exception');
+        Debugger::debug('DemoAction', array('debug'=>Laywork::get('debug')), __CLASS__, __METHOD__, __LINE__);
+        new \MysqlServer();
         $ret = $this->services['out']->doit();
     }
 }

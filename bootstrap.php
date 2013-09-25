@@ -12,12 +12,12 @@ ini_set('implicit_flush', 'off');
 
 require_once __DIR__.'/lib/layload/layload.php';
 
-Layload::initialize(true);
 Layload::loadpath(__DIR__);
 Layload::classpath(__DIR__.'/../example');
 Layload::configure('/inc/classes.laywork.php');
+Layload::initialize();
 
 require_once __DIR__.'/src/Laywork.php';
-Laywork::initialize(array(true, Debugger::DEBUG_LEVEL_WARN + Debugger::DEBUG_LEVEL_ERROR));
+Laywork::initialize();
 Laywork::rootpath(dirname(__DIR__));
 ?>

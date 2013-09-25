@@ -8,6 +8,7 @@ return array(
     ),
     0 => array(
         1,2,3,4,5,6
-    )
+    ),
+    'debug' => array(1|8, 4|8)
 );
 ?>
