@@ -24,7 +24,7 @@ class Scope extends Base {
      * @param int|array $scope
      * @return mixed
      */
-    public static function parseScope($scope) {
+    public static function parseScope($scope = 0) {
         switch($scope) {
             case self::SCOPE_REQUEST: 
                 $scope = $_REQUEST;

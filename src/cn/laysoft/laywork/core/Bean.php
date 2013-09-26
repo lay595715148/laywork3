@@ -26,7 +26,7 @@ abstract class Bean extends Base {
      * @return Bean
      */
     public static function newInstance($name) {
-        $config = is_array($config)?$config:Laywork::beanConfig($name);
+        $config = Laywork::beanConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoBean';
         Debugger::info('Bean', "new bean($classname) instance", __CLASS__, __METHOD__, __LINE__);
         

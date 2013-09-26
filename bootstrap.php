@@ -10,12 +10,15 @@ ob_start();
 ini_set('output_buffering', 'on');
 ini_set('implicit_flush', 'off');
 
+require_once __DIR__.'/lib/PHP-Error/src/php_error.php';
+\php_error\reportErrors();
+/*
 require_once __DIR__.'/lib/layload/layload.php';
 
 Layload::loadpath(__DIR__);
 Layload::classpath(__DIR__.'/../example');
 Layload::configure('/inc/classes.laywork.php');
-Layload::initialize();
+Layload::initialize();*/
 
 require_once __DIR__.'/src/Laywork.php';
 Laywork::initialize();

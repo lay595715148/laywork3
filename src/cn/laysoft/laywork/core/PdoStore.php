@@ -26,7 +26,7 @@ class PdoStore extends Mysql {
      * 析构
      */
     public function __destruct() {
-        if($this->link) mysql_close($this->link);
+        if($this->link) $this->link = null;
     }
     /**
      * 打开数据库PDO连接
@@ -40,7 +40,7 @@ class PdoStore extends Mysql {
         $user = isset($config['username'])?$config['username']:$config['user'];
         $password = $config['password'];
         $database = isset($config['database'])?$config['database']:$config['schema'];
-        $options = is_array($config['options'])?$config['options']:array();
+        $options = (isset($config['options']) && is_array($config['options']))?$config['options']:array();
         $dsn = "$driver:dbname=$database;host=$host";
 
         $link = new PDO($dsn, $user, $password, $options);
@@ -72,10 +72,10 @@ class PdoStore extends Mysql {
         if($result instanceof PDOStatement) { $result->closeCursor(); }
         
         if($encoding) {
-            $link->query('SET NAMES '.$encoding, $link);
+            $link->query('SET NAMES '.$encoding);
         } else if($config['encoding']) {
             $encoding = &$config['encoding'];
-            $link->query('SET NAMES '.$encoding, $link);
+            $link->query('SET NAMES '.$encoding);
         }
         if($showSQL) {
             //echo '<pre>'.$sql.'</pre>';
@@ -109,10 +109,10 @@ class PdoStore extends Mysql {
         if($result instanceof PDOStatement) { $result->closeCursor(); }
         
         if($encoding) {
-            $link->query('SET NAMES '.$encoding, $link);
+            $link->query('SET NAMES '.$encoding);
         } else if($config['encoding']) {
             $encoding = &$config['encoding'];
-            $link->query('SET NAMES '.$encoding, $link);
+            $link->query('SET NAMES '.$encoding);
         }
         if($showSQL) {
             //echo '<pre>'.$sql.'</pre>';

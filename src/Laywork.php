@@ -220,7 +220,7 @@ final class Laywork {
      * @return void
      */
     public static function action($name, $config) {
-        $actions = &self::get('actions');
+        $actions = self::get('actions');
         
         if(array_key_exists($name, $actions)) {
             //TODO warning has been configured by this name
@@ -238,7 +238,7 @@ final class Laywork {
      * @return void
      */
     public static function service($name, $config) {
-        $services = &self::get('services');
+        $services = self::get('services');
         
         if(array_key_exists($name, $services)) {
             //TODO warning has been configured by this name
@@ -256,7 +256,7 @@ final class Laywork {
      * @return void
      */
     public static function store($name, $config) {
-        $stores = &self::get('stores');
+        $stores = self::get('stores');
         
         if(array_key_exists($name, $stores)) {
             //TODO warning has been configured by this name
@@ -274,7 +274,7 @@ final class Laywork {
      * @return void
      */
     public static function bean($name, $config) {
-        $beans = &self::get('beans');
+        $beans = self::get('beans');
         $config = is_array($config)?$config:array();
         
         if(array_key_exists($name, $beans)) {

@@ -7,7 +7,11 @@ if(!defined('INIT_LAYWORK')) { exit; }
 class DemoAction extends Action {
     public function launch() {
         Debugger::info('DemoAction', 'launch', __CLASS__, __METHOD__, __LINE__);
-        Debugger::debug('Debugger', spl_autoload_functions(), __CLASS__, __METHOD__, __LINE__);
+        $funs = spl_autoload_functions();
+        Debugger::debug('Debugger', $funs, __CLASS__, __METHOD__, __LINE__);
+        Debugger::debug('Debugger', end($funs), __CLASS__, __METHOD__, __LINE__);
+        $funs = spl_autoload_functions();
+        Debugger::debug('Debugger', $funs, __CLASS__, __METHOD__, __LINE__);
         //$ret = $this->services['in']->doit();
         //throw new Exception('test exception');
         Debugger::debug('Debugger', array('debug'=>Laywork::get('debug')), __CLASS__, __METHOD__, __LINE__);

@@ -113,9 +113,9 @@ abstract class Action extends Base {
 
         if($method) {
             $dispatcher = $method;
-        } else if($dispatchkey) {
-            $variable   = Scope::parseScope((is_numeric($scope) && $scope >= 0 && $scope <= 5)?$scope:0);
-            $dispatcher = (array_key_exists($dispatchkey,$variable))?$_REQUEST[$dispatchkey]:false;
+        } else if(is_string($dispatchkey) || is_integer($dispatchkey)) {
+            $variable   = Scope::parseScope();
+            $dispatcher = (array_key_exists($dispatchkey, $variable))?$_REQUEST[$dispatchkey]:false;
         } else {
             $ext        = pathinfo($_SERVER['PHP_SELF']);
             $dispatcher = $ext['filename'];
