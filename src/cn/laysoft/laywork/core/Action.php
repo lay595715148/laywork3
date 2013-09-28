@@ -33,7 +33,7 @@ abstract class Action extends Base {
     public static function newInstance($name, $config = '') {
         $config = is_array($config)?$config:Laywork::actionConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoAction';
-        Debugger::info('Action', "new action($classname) instance", __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Action', "new action($classname) instance", __LINE__, __METHOD__, __CLASS__);
         
         if(self::$instance == null) {
             if(isset($config['classname'])) {
@@ -65,6 +65,10 @@ abstract class Action extends Base {
      */
     protected $template;
     /**
+     * @var Preface 引语引擎对象
+     */
+    protected $preface;
+    /**
      * 构造方法
      * @param array $config
      */
@@ -76,11 +80,21 @@ abstract class Action extends Base {
      * @return Action
      */
     public function initialize() {//must return $this
-        Debugger::info('Action', "initialize", __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Action', "initialize", __LINE__, __METHOD__, __CLASS__);
         $config      = &$this->config;
         $services    = &$this->services;
         $template    = &$this->template;
+        $preface     = &$this->preface;
 
+        //加载配置中的所有preface
+        if(is_array($config) && array_key_exists('preface', $config)) {
+            $preface = Preface::newInstance($config['preface']);
+            $preface->initialize();
+        } else {
+            $preface = Preface::newInstance();
+            $preface->initialize();
+        }
+        
         //加载配置中的所有service
         if(is_array($config) && array_key_exists('services',$config) && $config['services'] && is_array($config['services'])) {
             foreach($config['services'] as $k=>$name) {
@@ -91,8 +105,15 @@ abstract class Action extends Base {
             $services['demo'] = Service::newInstance();
             $services['demo']->initialize();
         }
-        $template = Template::newInstance();
-        $template->initialize();
+        
+        //加载配置中的所有template
+        if(is_array($config) && array_key_exists('template', $config)) {
+            $template = Template::newInstance($config['template']);
+            $template->initialize();
+        } else {
+            $template = Template::newInstance();
+            $template->initialize();
+        }
 
         return $this;
     }
@@ -107,7 +128,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function dispatch($method, $params) {//must return $this
-        Debugger::info('Action', "dispatch", __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Action', "dispatch", __LINE__, __METHOD__, __CLASS__);
         $dispatchkey = Laywork::get('dispatch-key') || Action::DISPATCH_KEY;
         $dispatchstyle = Laywork::get('dispatch-style') || Action::DISPATCH_STYLE;
 

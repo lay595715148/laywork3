@@ -15,20 +15,29 @@ if(!defined('INIT_LAYWORK')) { exit; }
  */
 abstract class Template extends Base {
     /**
-     * @staticvar action instance
+     * @staticvar Template instance
      */
     private static $instance = null;
     /**
-     * get action instance 
-     * @param $name name of action
+     * get Template instance 
+     * @param $name name of Template
      * @param $config default is empty
-     * @return Action
+     * @return Template
      */
-    public static function newInstance($config = '') {
-        Debugger::info('Template', "new template(DemoTemplate) instance", __CLASS__, __METHOD__, __LINE__);
+    public static function newInstance($name = '', $config = '') {
+        $config = is_array($config)?$config:Laywork::templateConfig($name);
+        $classname = isset($config['classname'])?$config['classname']:'DemoTemplate';
+        Debugger::info('Template', "new template($classname) instance", __LINE__, __METHOD__, __CLASS__);
         
         if(self::$instance == null) {
-            self::$instance = new DemoTemplate($config);
+            if(isset($config['classname'])) {
+                self::$instance = new $classname($config);
+            } else {
+                self::$instance = new DemoTemplate($config);
+            }
+            if(!(self::$instance instanceof Template)) {
+                self::$instance = new DemoTemplate($config);
+            }
         }
         return self::$instance;
     }
@@ -83,7 +92,7 @@ abstract class Template extends Base {
      * 初始化
      */
     public function initialize() {//must return $this
-        Debugger::info('Template', 'initialize', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Template', 'initialize', __LINE__, __METHOD__, __CLASS__);
         return $this;
     }
     /**

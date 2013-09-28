@@ -63,7 +63,7 @@ class PdoStore extends Mysql {
      * @return mixed
      */
     public function query($sql, $encoding = '', $showSQL = false) {
-        Debugger::info('PdoStore', 'query', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('PdoStore', 'query', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         $result = &$this->result;
         $link   = &$this->link;
@@ -79,11 +79,11 @@ class PdoStore extends Mysql {
         }
         if($showSQL) {
             //echo '<pre>'.$sql.'</pre>';
-            Debugger::info('PdoStore', 'showsql:'.$sql, __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('PdoStore', 'showsql:'.$sql, __LINE__, __METHOD__, __CLASS__);
         } else if($config['showsql']) {
             $encoding = &$config['showsql'];
             //echo '<pre>'.$sql.'</pre>';
-            Debugger::info('PdoStore', 'showsql:'.$sql, __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('PdoStore', 'showsql:'.$sql, __LINE__, __METHOD__, __CLASS__);
         }
         if($sql) {
             $result = $link->query($sql);
@@ -100,7 +100,7 @@ class PdoStore extends Mysql {
      * @return mixed
      */
     public function exec($sql, $encoding = '', $showSQL = false) {
-        Debugger::info('PdoStore', 'exec', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('PdoStore', 'exec', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         $result = &$this->result;
         $link   = &$this->link;
@@ -116,11 +116,11 @@ class PdoStore extends Mysql {
         }
         if($showSQL) {
             //echo '<pre>'.$sql.'</pre>';
-            Debugger::info('PdoStore', 'showsql:'.$sql, __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('PdoStore', 'showsql:'.$sql, __LINE__, __METHOD__, __CLASS__);
         } else if($config['showsql']) {
             $encoding = &$config['showsql'];
             //echo '<pre>'.$sql.'</pre>';
-            Debugger::info('PdoStore', 'showsql:'.$sql, __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('PdoStore', 'showsql:'.$sql, __LINE__, __METHOD__, __CLASS__);
         }
         if($sql) {
             $result = $link->exec($sql);
@@ -143,7 +143,7 @@ class PdoStore extends Mysql {
         $result = &$this->result;
 
         $sql = $this->insertSQL($table, $fields, $values, $replace);
-        Debugger::info('Mysql', 'insert', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Mysql', 'insert', __LINE__, __METHOD__, __CLASS__);
         $result = $this->exec($sql);
 
         return ($returnid)?$link->lastInsertId():$result;
@@ -158,7 +158,7 @@ class PdoStore extends Mysql {
         $result = &$this->result;
 
         $sql = $this->deleteSQL($table, $condition);
-        Debugger::info('PdoStore', 'delete', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('PdoStore', 'delete', __LINE__, __METHOD__, __CLASS__);
         $result = $this->exec($sql);
 
         return $result;
@@ -175,7 +175,7 @@ class PdoStore extends Mysql {
         $result = &$this->result;
 
         $sql = $this->updateSQL($table, $fields, $values, $condition);
-        Debugger::info('PdoStore', 'update', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('PdoStore', 'update', __LINE__, __METHOD__, __CLASS__);
         $result = $this->exec($sql);
 
         return $result;
@@ -191,7 +191,7 @@ class PdoStore extends Mysql {
      * @return mixed
      */
     public function select($table, $fields = '', $condition = '', $group = '', $order = '', $limit = '') {//$group is not useful
-        Debugger::info('PdoStore', 'select', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('PdoStore', 'select', __LINE__, __METHOD__, __CLASS__);
         return parent::select($table, $fields, $condition, $group, $order, $limit);
     }
     

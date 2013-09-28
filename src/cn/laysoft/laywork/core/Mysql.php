@@ -42,7 +42,7 @@ class Mysql extends Store {
      * 打开mysql数据库连接
      */
     public function connect() {
-        Debugger::info('Mysql', 'connect', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Mysql', 'connect', __LINE__, __METHOD__, __CLASS__);
         
         $config = &$this->config;
         $link   = &$this->link;
@@ -79,7 +79,7 @@ class Mysql extends Store {
      * @return mixed
      */
     public function query($sql, $encoding = '', $showSQL = false) {
-        Debugger::info('Mysql', 'query', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Mysql', 'query', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         $result = &$this->result;
         $link   = &$this->link;
@@ -93,11 +93,11 @@ class Mysql extends Store {
         }
         if($showSQL) {
             //echo '<pre>'.$sql.'</pre>';
-            Debugger::info('Mysql', 'showsql:'.$sql, __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('Mysql', 'showsql:'.$sql, __LINE__, __METHOD__, __CLASS__);
         } else if($config['showsql']) {
             $encoding = &$config['showsql'];
             //echo '<pre>'.$sql.'</pre>';
-            Debugger::info('Mysql', 'showsql:'.$sql, __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('Mysql', 'showsql:'.$sql, __LINE__, __METHOD__, __CLASS__);
         }
         if($sql) {
             $result = mysql_query($sql, $link);
@@ -119,7 +119,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->insertSQL($table, $fields, $values, $replace);
-        Debugger::info('Mysql', 'insert', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Mysql', 'insert', __LINE__, __METHOD__, __CLASS__);
         $result = $this->query($sql);
 
         return ($returnid)?mysql_insert_id($link):$result;
@@ -134,7 +134,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->deleteSQL($table, $condition);
-        Debugger::info('Mysql', 'delete', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Mysql', 'delete', __LINE__, __METHOD__, __CLASS__);
         $result = $this->query($sql);
 
         return $result;
@@ -151,7 +151,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->updateSQL($table, $fields, $values, $condition);
-        Debugger::info('Mysql', 'update', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Mysql', 'update', __LINE__, __METHOD__, __CLASS__);
         $result = $this->query($sql);
 
         return $result;
@@ -170,7 +170,7 @@ class Mysql extends Store {
         $result = &$this->result;
         
         $sql = $this->selectSQL($table, $fields, $condition, $group, $order, $limit);
-        Debugger::info('Mysql', 'select', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('Mysql', 'select', __LINE__, __METHOD__, __CLASS__);
         $result = $this->query($sql);
 
         return $result;

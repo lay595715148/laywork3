@@ -3,7 +3,8 @@ return array(
     'actions' => array(
         'in' => array(
             'classname' => 'cn\laysoft\laywork\demo\DemoAction',
-            'services' => array('in', 'out')
+            'services' => array('in', 'out'),
+            'preface' => 'out'
         )
     ),
     'actions.out' => array(

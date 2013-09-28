@@ -28,7 +28,9 @@ final class Laywork {
         'actions' => array(),
         'services' => array(),
         'stores' => array(),
-        'beans' => array()
+        'beans' => array(),
+        'prefaces' => array(),
+        'templates' => array()
     );
     /**
      * @staticvar all class mappings
@@ -80,8 +82,8 @@ final class Laywork {
      */
     public static function initialize($debug = '') {
         spl_autoload_register('Laywork::autoload');
-        Debugger::initialize($debug);
-        Debugger::info('APPLICATION', 'initilize application', __CLASS__, __METHOD__, __LINE__);
+        if($debug) Debugger::initialize($debug);
+        Debugger::info('APPLICATION', 'initilize application', __LINE__, __METHOD__, __CLASS__);
     }
     /**
      * class autoload function
@@ -97,13 +99,13 @@ final class Laywork {
         if(array_key_exists($classname, $classes)) {//全名映射
             if(is_file($classes[$classname])) {
                 require_once $classes[$classname];
-                Debugger::info('REQUIRE_ONCE', $classes[$classname], __CLASS__, __METHOD__, __LINE__);
+                Debugger::info('REQUIRE_ONCE', $classes[$classname], __LINE__, __METHOD__, __CLASS__);
             } else if(is_file($_CLASSPATH.$classes[$classname])) {
                 require_once $_CLASSPATH.$classes[$classname];
-                Debugger::info('REQUIRE_ONCE', $_CLASSPATH.$classes[$classname], __CLASS__, __METHOD__, __LINE__);
+                Debugger::info('REQUIRE_ONCE', $_CLASSPATH.$classes[$classname], __LINE__, __METHOD__, __CLASS__);
             } else {
                 //TODO mapping is error
-                Debugger::warn('CLASS_AUTOLOAD', 'Not found class mapping file by name', __CLASS__, __METHOD__, __LINE__);
+                Debugger::warn('CLASS_AUTOLOAD', 'Not found class mapping file by name', __LINE__, __METHOD__, __CLASS__);
             }
         } else {
             $tmparr = explode("\\",$classname);
@@ -116,18 +118,18 @@ final class Laywork {
                     $tmppath = $path.'/'.$name;
                     foreach($suffixes as $i=>$suffix) {
                         if(is_file($tmppath.$suffix)) {
-                            Debugger::info('REQUIRE_ONCE', $tmppath.$suffix, __CLASS__, __METHOD__, __LINE__);
+                            Debugger::info('REQUIRE_ONCE', $tmppath.$suffix, __LINE__, __METHOD__, __CLASS__);
                             require_once $tmppath.$suffix;
                             $required = true;
                             break;
                         }
                     }
                     if(!class_exists($classname) && !interface_exists($classname)) {
-                        Debugger::warn('CLASS_AUTOLOAD', 'Not found by namespace', __CLASS__, __METHOD__, __LINE__);
+                        Debugger::warn('CLASS_AUTOLOAD', 'Not found by namespace', __LINE__, __METHOD__, __CLASS__);
                     }
                 } else {
                     //TODO not found by namespace dir
-                    Debugger::warn('CLASS_AUTOLOAD', 'Not found by namespace dir', __CLASS__, __METHOD__, __LINE__);
+                    Debugger::warn('CLASS_AUTOLOAD', 'Not found by namespace dir', __LINE__, __METHOD__, __CLASS__);
                 }
             } else if(preg_match_all('/([A-Z]{1,}[a-z0-9]{0,}|[a-z0-9]{1,})_{0,1}/', $classname, $matches)) {
                 //TODO autoload class by regular
@@ -138,7 +140,7 @@ final class Laywork {
                         $tmppath = $path.'/'.substr($classname, strpos($classname, $item) + strlen($item));
                         foreach($suffixes as $i=>$suffix) {
                             if(is_file($tmppath.$suffix)) {
-                                Debugger::info('REQUIRE_ONCE', $tmppath.$suffix, __CLASS__, __METHOD__, __LINE__);
+                                Debugger::info('REQUIRE_ONCE', $tmppath.$suffix, __LINE__, __METHOD__, __CLASS__);
                                 require_once $tmppath.$suffix;
                                 break 2;
                             }
@@ -147,7 +149,7 @@ final class Laywork {
                     } else if($index == count($matches[1]) - 1) {
                         foreach($suffixes as $i=>$suffix) {
                             if(is_file($path.$suffix)) {
-                                Debugger::info('REQUIRE_ONCE', $path.$suffix, __CLASS__, __METHOD__, __LINE__);
+                                Debugger::info('REQUIRE_ONCE', $path.$suffix, __LINE__, __METHOD__, __CLASS__);
                                 require_once $path.$suffix;
                                 break 2;
                             }
@@ -155,7 +157,7 @@ final class Laywork {
                         break;
                     } else {
                         //TODO not found by regular match
-                        Debugger::warn('CLASS_AUTOLOAD', 'Not found by regular match', __CLASS__, __METHOD__, __LINE__);
+                        Debugger::warn('CLASS_AUTOLOAD', 'Not found by regular match', __LINE__, __METHOD__, __CLASS__);
                     }
                 }
             }
@@ -200,7 +202,7 @@ final class Laywork {
             foreach($keys as $index=>$key) {
                 if(isset($node[$key]) && $index === $count - 1) {
                     //TODO warning has been configured by this name
-                    Debugger::warn('CONFIGURE', '$configuration[...]["'.$key.'"] has been configured', __CLASS__, __METHOD__, __LINE__);
+                    Debugger::warn('CONFIGURE', '$configuration[...]["'.$key.'"] has been configured', __LINE__, __METHOD__, __CLASS__);
                     $node[$key] = $value;
                 } else if(isset($node[$key])) {
                     $node = &$node[$key];
@@ -222,11 +224,11 @@ final class Laywork {
     public static function action($name, $config) {
         $actions = self::get('actions');
         
-        if(array_key_exists($name, $actions)) {
+        if(is_array($actions) && array_key_exists($name, $actions)) {
             //TODO warning has been configured by this name
-            Debugger::warn('CONFIGURE', '$configuration["actions"]["'.$name.'"] has been configured', __CLASS__, __METHOD__, __LINE__);
+            Debugger::warn('CONFIGURE', '$configuration["actions"]["'.$name.'"] has been configured', __LINE__, __METHOD__, __CLASS__);
         } else if(is_string($name) || is_numeric($name)) {
-            Debugger::info('CONFIGURE', 'action('.$name.')', __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('CONFIGURE', 'action('.$name.')', __LINE__, __METHOD__, __CLASS__);
             self::set('actions.'.$name, $config);
             //TODO configure an action
         }
@@ -240,11 +242,11 @@ final class Laywork {
     public static function service($name, $config) {
         $services = self::get('services');
         
-        if(array_key_exists($name, $services)) {
+        if(is_array($services) && array_key_exists($name, $services)) {
             //TODO warning has been configured by this name
-            Debugger::warn('CONFIGURE', '$configuration["services"]["'.$name.'"] has been configured', __CLASS__, __METHOD__, __LINE__);
+            Debugger::warn('CONFIGURE', '$configuration["services"]["'.$name.'"] has been configured', __LINE__, __METHOD__, __CLASS__);
         } else {
-            Debugger::info('CONFIGURE', 'service('.$name.')', __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('CONFIGURE', 'service('.$name.')', __LINE__, __METHOD__, __CLASS__);
             self::set('services.'.$name, $config);
             //TODO configure a service
         }
@@ -258,11 +260,11 @@ final class Laywork {
     public static function store($name, $config) {
         $stores = self::get('stores');
         
-        if(array_key_exists($name, $stores)) {
+        if(is_array($stores) && array_key_exists($name, $stores)) {
             //TODO warning has been configured by this name
-            Debugger::warn('CONFIGURE', '$configuration["stores"]["'.$name.'"] has been configured', __CLASS__, __METHOD__, __LINE__);
+            Debugger::warn('CONFIGURE', '$configuration["stores"]["'.$name.'"] has been configured', __LINE__, __METHOD__, __CLASS__);
         } else {
-            Debugger::info('CONFIGURE', 'store('.$name.')', __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('CONFIGURE', 'store('.$name.')', __LINE__, __METHOD__, __CLASS__);
             self::set('stores.'.$name, $config);
             //TODO configure a store
         }
@@ -277,13 +279,51 @@ final class Laywork {
         $beans = self::get('beans');
         $config = is_array($config)?$config:array();
         
-        if(array_key_exists($name, $beans)) {
+        if(is_array($beans) && array_key_exists($name, $beans)) {
             //TODO warning has been configured by this name
-            Debugger::warn('CONFIGURE', '$configuration["beans"]["'.$name.'"] has been configured', __CLASS__, __METHOD__, __LINE__);
+            Debugger::warn('CONFIGURE', '$configuration["beans"]["'.$name.'"] has been configured', __LINE__, __METHOD__, __CLASS__);
         } else {
-            Debugger::info('CONFIGURE', 'bean('.$name.')', __CLASS__, __METHOD__, __LINE__);
+            Debugger::info('CONFIGURE', 'bean('.$name.')', __LINE__, __METHOD__, __CLASS__);
             self::set('beans.'.$name, $config);
             //TODO configure a bean
+        }
+    }
+    /**
+     * configure a preface
+     * @param $name
+     * @param $config
+     * @return void
+     */
+    public static function preface($name, $config) {
+        $prefaces = self::get('prefaces');
+        $config = is_array($config)?$config:array();
+        
+        if(is_array($prefaces) && array_key_exists($name, $prefaces)) {
+            //TODO warning has preface configured by this name
+            Debugger::warn('CONFIGURE', '$configuration["prefaces"]["'.$name.'"] has been configured', __LINE__, __METHOD__, __CLASS__);
+        } else {
+            Debugger::info('CONFIGURE', 'preface('.$name.')', __LINE__, __METHOD__, __CLASS__);
+            self::set('prefaces.'.$name, $config);
+            //TODO configure a preface
+        }
+    }
+    /**
+     * configure a bean
+     * @param $name
+     * @param $config
+     * @return void
+     */
+    public static function template($name, $config) {
+        $templates = self::get('templates');
+        $config = is_array($config)?$config:array();
+        
+        if(is_array($templates) && array_key_exists($name, $templates)) {
+            //TODO warning has template configured by this name
+            Debugger::warn('CONFIGURE', '$configuration["templates"]["'.$name.'"] has been configured', __LINE__, __METHOD__, __CLASS__);
+        } else {
+            Debugger::info('CONFIGURE', 'template('.$name.')', __LINE__, __METHOD__, __CLASS__);
+            self::set('templates.'.$name, $config);
+            //TODO configure a template
         }
     }
     /**
@@ -312,11 +352,27 @@ final class Laywork {
     }
     /**
      * get bean configuration by name
-     * @param $bean
+     * @param $name
      * @return array
      */
     public static function beanConfig($name) {
         return self::get('beans.'.$name);
+    }
+    /**
+     * get preface configuration by name
+     * @param $name
+     * @return array
+     */
+    public static function prefaceConfig($name) {
+        return self::get('prefaces.'.$name);
+    }
+    /**
+     * get template configuration by name
+     * @param $name
+     * @return array
+     */
+    public static function templateConfig($name) {
+        return self::get('templates.'.$name);
     }
     /**
      * laywork autorun configuration,all config file is load in $_ROOTPATH
@@ -339,7 +395,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning actions is not an array
-                                Debugger::warn('CONFIGURE', '$configuration["actions"] is not an array', __CLASS__, __METHOD__, __LINE__);
+                                Debugger::warn('CONFIGURE', '$configuration["actions"] is not an array', __LINE__, __METHOD__, __CLASS__);
                             }
                             break;
                         case 'services':
@@ -349,7 +405,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning services is not an array
-                                Debugger::warn('CONFIGURE', '$configuration["services"] is not an array', __CLASS__, __METHOD__, __LINE__);
+                                Debugger::warn('CONFIGURE', '$configuration["services"] is not an array', __LINE__, __METHOD__, __CLASS__);
                             }
                             break;
                         case 'stores':
@@ -359,7 +415,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning stores is not an array
-                                Debugger::warn('CONFIGURE', '$configuration["stores"] is not an array', __CLASS__, __METHOD__, __LINE__);
+                                Debugger::warn('CONFIGURE', '$configuration["stores"] is not an array', __LINE__, __METHOD__, __CLASS__);
                             }
                             break;
                         case 'beans':
@@ -369,7 +425,27 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning beans is not an array
-                                Debugger::warn('CONFIGURE', '$configuration["beans"] is not an array', __CLASS__, __METHOD__, __LINE__);
+                                Debugger::warn('CONFIGURE', '$configuration["beans"] is not an array', __LINE__, __METHOD__, __CLASS__);
+                            }
+                            break;
+                        case 'prefaces':
+                            if(is_array($item)) {
+                                foreach($item as $name=>$conf) {
+                                    self::preface($name, $conf);
+                                }
+                            } else {
+                                //TODO warning beans is not an array
+                                Debugger::warn('CONFIGURE', '$configuration["prefaces"] is not an array', __LINE__, __METHOD__, __CLASS__);
+                            }
+                            break;
+                        case 'templates':
+                            if(is_array($item)) {
+                                foreach($item as $name=>$conf) {
+                                    self::template($name, $conf);
+                                }
+                            } else {
+                                //TODO warning beans is not an array
+                                Debugger::warn('CONFIGURE', '$configuration["templates"] is not an array', __LINE__, __METHOD__, __CLASS__);
                             }
                             break;
                         case 'files':
@@ -379,9 +455,12 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning files is not an array
-                                Debugger::warn('CONFIGURE', '$configuration["files"] is not an array', __CLASS__, __METHOD__, __LINE__);
+                                Debugger::warn('CONFIGURE', '$configuration["files"] is not an array', __LINE__, __METHOD__, __CLASS__);
                             }
                             break;
+                        case 'debug':
+                            //update Debugger
+                            Debugger::initialize($item);
                         default:
                             self::set($key, $item);
                             //TODO default
@@ -421,13 +500,13 @@ final class Laywork {
      * @param $params param array,default is empty
      */
     public static function start($action = '', $method = '', $params = '') {
-        Debugger::info('APPLICATION', 'start application', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('APPLICATION', 'start application', __LINE__, __METHOD__, __CLASS__);
         try {
             self::getInstance()->run($action, $method, $params);
         } catch (Exception $e) {
-            Debugger::error('Exception', $e->getMessage()."\r\n".$e->getTraceAsString(), __CLASS__, __METHOD__, __LINE__);
+            Debugger::error('Exception', $e->getMessage()."\r\n".$e->getTraceAsString(), __LINE__, __METHOD__, __CLASS__);
         }
-        Debugger::info('APPLICATION', 'finish application', __CLASS__, __METHOD__, __LINE__);
+        Debugger::info('APPLICATION', 'finish application', __LINE__, __METHOD__, __CLASS__);
     }
     
     /**
@@ -475,9 +554,13 @@ class Debugger {
     const DEBUG_LEVEL_WARN = 4;
     const DEBUG_LEVEL_ERROR = 8;
     const DEBUG_LEVEL_ALL = 15;
-    public static $out = true;
+    public static $out = false;
     public static $log = false;
-    public static function initialize($debug) {
+    /**
+     * initialize Debugger
+     * @return void
+     */
+    public static function initialize($debug = '') {
         if(is_bool($debug)) {
             self::$out = self::$log = $debug;
         } else if(is_array($debug)) {
@@ -489,7 +572,7 @@ class Debugger {
             self::$out = self::$log = $debug;
         } else if($debug === '') {
             $debug = Laywork::get('debug');
-            if($debug === '') {
+            if($debug === '' || $debug === null) {
                 self::$out = self::$log = false;
             } else {
                 self::initialize($debug);
@@ -498,68 +581,103 @@ class Debugger {
             self::$out = self::$log = false;
         }
     }
-    public static function debug($tag, $msg, $classname = '', $method = '', $line = '') {
+    /**
+     * print out debug infomation
+     * @return void
+     */
+    public static function debug($tag, $msg, $line = '', $method = '', $class = '') {
         if(self::$out === true || (self::$out && in_array(self::$out, array(1, 3, 5, 7, 9, 11, 13, 15)))) {
-            self::pre($tag, self::DEBUG_LEVEL_DEBUG, $msg, $classname, $method, $line);
+            self::pre($tag, self::DEBUG_LEVEL_DEBUG, $msg, $line, $method, $class);
         }
         if(self::$log === true || (self::$log && in_array(self::$log, array(1, 3, 5, 7, 9, 11, 13, 15)))) {
-            self::log($tag, self::DEBUG_LEVEL_DEBUG, json_encode($msg), $classname, $method, $line);
+            self::log($tag, self::DEBUG_LEVEL_DEBUG, json_encode($msg), $line, $method, $class);
         }
     }
-    public static function info($tag, $msg, $classname = '', $method = '', $line = '') {
+    /**
+     * print out info infomation
+     * @return void
+     */
+    public static function info($tag, $msg, $line = '', $method = '', $class = '') {
         if(self::$out === true || (self::$out && in_array(self::$out, array(2, 3, 6, 7, 10, 11, 14, 15)))) {
-            self::out($tag, self::DEBUG_LEVEL_INFO, $msg, $classname, $method, $line);
+            self::out($tag, self::DEBUG_LEVEL_INFO, $msg, $line, $method, $class);
         }
         if(self::$log === true || (self::$log && in_array(self::$log, array(2, 3, 6, 7, 10, 11, 14, 15)))) {
-            self::log($tag, self::DEBUG_LEVEL_INFO, $msg, $classname, $method, $line);
+            self::log($tag, self::DEBUG_LEVEL_INFO, $msg, $line, $method, $class);
         }
     }
-    public static function warning($tag, $msg, $classname = '', $method = '', $line = '') {
+    /**
+     * print out warning infomation
+     * @return void
+     */
+    public static function warning($tag, $msg, $line = '', $method = '', $class = '') {
         if(self::$out === true || (self::$out && in_array(self::$out, array(4, 5, 6, 7, 12, 13, 14, 15)))) {
-            self::out($tag, self::DEBUG_LEVEL_WARN, $msg, $classname, $method, $line);
+            self::out($tag, self::DEBUG_LEVEL_WARN, $msg, $line, $method, $class);
         }
         if(self::$log === true || (self::$log && in_array(self::$log, array(4, 5, 6, 7, 12, 13, 14, 15)))) {
-            self::log($tag, self::DEBUG_LEVEL_WARN, $msg, $classname, $method, $line);
+            self::log($tag, self::DEBUG_LEVEL_WARN, $msg, $line, $method, $class);
         }
     }
-    public static function warn($tag, $msg, $classname = '', $method = '', $line = '') {
-        self::warning($tag, $msg, $classname, $method, $line);
+    /**
+     * print out warning infomation
+     * @return void
+     */
+    public static function warn($tag, $msg, $line = '', $method = '', $class = '') {
+        self::warning($tag, $msg, $line, $method, $class);
     }
-    public static function error($tag, $msg, $classname = '', $method = '', $line = '') {
-        echo 'once start<br>';
+    /**
+     * print out error infomation
+     * @return void
+     */
+    public static function error($tag, $msg, $line = '', $method = '', $class = '') {
         if(self::$out === true || (self::$out && in_array(self::$out, array(8, 9, 10, 11, 12, 13, 14, 15)))) {
-            self::out($tag, self::DEBUG_LEVEL_ERROR, $msg, $classname, $method, $line);
+            self::out($tag, self::DEBUG_LEVEL_ERROR, $msg, $line, $method, $class);
         }
-        echo 'once middle<br>';
         if(self::$log === true || (self::$log && in_array(self::$log, array(8, 9, 10, 11, 12, 13, 14, 15)))) {
-            self::log($tag, self::DEBUG_LEVEL_ERROR, $msg, $classname, $method, $line);
+            self::log($tag, self::DEBUG_LEVEL_ERROR, $msg, $line, $method, $class);
         }
-        echo 'once end<br>';
     }
     
-    public static function log($tag = '', $lv = 1, $msg = '', $classname = '', $method = '', $line = '') {
-        if(!$method) $method = $classname;
+    /**
+     * syslog infomation
+     * @return void
+     */
+    public static function log($tag = '', $lv = 1, $msg = '', $line = '', $method = '', $class = '') {
+        if(!$method) $method = $class;
         $lv = self::parseLevel($lv);
         $ip = self::ip();
         syslog(LOG_INFO, date('Y-m-d H:i:s').'.'.floor(microtime()*1000)." $ip LAYWORK [$lv] [$tag] $method:$line $msg");
     }
-    public static function out($tag = '', $lv = 1, $msg = '', $classname = '', $method = '', $line = '') {
-        if(!$method) $method = $classname;
+    /**
+     * print infomation
+     * @return void
+     */
+    public static function out($tag = '', $lv = 1, $msg = '', $line = '', $method = '', $class = '') {
+        if(!$method) $method = $class;
         $lv = self::parseLevel($lv);
         $ip = self::ip();
         echo '<pre style="padding:0px;margin:0px;border:0px;">';
         echo date('Y-m-d H:i:s').'.'.floor(microtime()*1000)." $ip [$lv] [$tag] $method:$line $msg\r\n";
         echo '</pre>';
     }
-    public static function pre($tag = '', $lv = 1, $msg = '', $classname = '', $method = '', $line = '') {
-        if(!$method) $method = $classname;
+    /**
+     * print mixed infomation
+     * @return void
+     */
+    public static function pre($tag = '', $lv = 1, $msg = '', $line = '', $method = '', $class = '') {
+        if(!$method) $method = $class;
         $lv = self::parseLevel($lv);
         $ip = self::ip();
         echo '<pre style="padding:0px;margin:0px;border:0px;">';
         echo date('Y-m-d H:i:s').'.'.floor(microtime()*1000)." $ip [$lv] [$tag] $method:$line\r\n";
+        echo '</pre>';
+        echo '<pre style="padding:0px;margin:0 0 0 20px;border:0px;">';
         print_r($msg);
         echo '</pre>';
     }
+    /**
+     * parse level to string or integer
+     * @return string|integer
+     */
     public static function parseLevel($lv) {
         switch($lv) {
             case self::DEBUG_LEVEL_DEBUG:
@@ -589,6 +707,10 @@ class Debugger {
         }
         return $lv;
     }
+    /**
+     * get client ip
+     * @return string
+     */
     public static function ip() {
         if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
             $ip = getenv('HTTP_CLIENT_IP');
