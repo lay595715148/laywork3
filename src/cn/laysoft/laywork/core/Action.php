@@ -33,7 +33,7 @@ abstract class Action extends Base {
     public static function newInstance($name, $config = '') {
         $config = is_array($config)?$config:Laywork::actionConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoAction';
-        Debugger::info('Action', "new action($classname) instance", __LINE__, __METHOD__, __CLASS__);
+        Debugger::info("new action($classname) instance", 'Action', __LINE__, __METHOD__, __CLASS__);
         
         if(self::$instance == null) {
             if(isset($config['classname'])) {
@@ -80,7 +80,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function initialize() {//must return $this
-        Debugger::info('Action', "initialize", __LINE__, __METHOD__, __CLASS__);
+        Debugger::info("initialize", 'Action', __LINE__, __METHOD__, __CLASS__);
         $config      = &$this->config;
         $services    = &$this->services;
         $template    = &$this->template;
@@ -128,7 +128,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function dispatch($method, $params) {//must return $this
-        Debugger::info('Action', "dispatch", __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('dispatch', 'Action', __LINE__, __METHOD__, __CLASS__);
         $dispatchkey = Laywork::get('dispatch-key') || Action::DISPATCH_KEY;
         $dispatchstyle = Laywork::get('dispatch-style') || Action::DISPATCH_STYLE;
 
@@ -158,6 +158,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function tail() {//must return $this
+        Debugger::info('tail', 'Action', __LINE__, __METHOD__, __CLASS__);
         extract(pathinfo($_SERVER['PHP_SELF']));
         switch($extension) {
             case 'json':

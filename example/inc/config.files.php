@@ -9,6 +9,12 @@ return array(
         '/laywork/example/inc/config.prefaces.php',
         '/laywork/example/inc/config.templates.php'
     ),
+    'actions' => array(
+        'out2' => array(
+            'classname' => 'cn\laysoft\laywork\demo\DemoAction',
+            'services' => array('in', 'out')
+        )
+    ),
     0 => array(
         1,2,3,4,5,6
     )

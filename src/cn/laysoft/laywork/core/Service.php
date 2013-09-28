@@ -27,7 +27,7 @@ abstract class Service extends Base {
     public static function newInstance($name, $config = '') {
         $config = is_array($config)?$config:Laywork::serviceConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoService';
-        Debugger::info('Service', "new service($classname) instance", __LINE__, __METHOD__, __CLASS__);
+        Debugger::info("new service($classname) instance", 'Service', __LINE__, __METHOD__, __CLASS__);
         
         if(!isset(self::$instances[$name])) {
             if(isset($config['classname'])) {
@@ -66,7 +66,7 @@ abstract class Service extends Base {
     }
     
     public function initialize() {
-        Debugger::info('Service', "initialize", __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('initialize', 'Service', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         
         //加载配置中的bean

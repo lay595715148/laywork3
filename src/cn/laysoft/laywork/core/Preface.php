@@ -23,7 +23,7 @@ abstract class Preface extends Base {
     public static function newInstance($name = '', $config = '') {
         $config = is_array($config)?$config:Laywork::prefaceConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoPreface';
-        Debugger::info('Preface', "new preface($classname) instance", __LINE__, __METHOD__, __CLASS__);
+        Debugger::info("new preface($classname) instance", 'Preface', __LINE__, __METHOD__, __CLASS__);
         
         if(self::$instance == null) {
             if(isset($config['classname'])) {
@@ -54,7 +54,7 @@ abstract class Preface extends Base {
      * 初始化
      */
     public function initialize() {//must return $this
-        Debugger::info('Preface', 'initialize', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('initialize', 'Preface', __LINE__, __METHOD__, __CLASS__);
         return $this;
     }
 }

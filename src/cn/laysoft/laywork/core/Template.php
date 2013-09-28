@@ -27,7 +27,7 @@ abstract class Template extends Base {
     public static function newInstance($name = '', $config = '') {
         $config = is_array($config)?$config:Laywork::templateConfig($name);
         $classname = isset($config['classname'])?$config['classname']:'DemoTemplate';
-        Debugger::info('Template', "new template($classname) instance", __LINE__, __METHOD__, __CLASS__);
+        Debugger::info("new template($classname) instance", 'Template', __LINE__, __METHOD__, __CLASS__);
         
         if(self::$instance == null) {
             if(isset($config['classname'])) {
@@ -92,7 +92,7 @@ abstract class Template extends Base {
      * 初始化
      */
     public function initialize() {//must return $this
-        Debugger::info('Template', 'initialize', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('initialize', 'Template', __LINE__, __METHOD__, __CLASS__);
         return $this;
     }
     /**
@@ -210,6 +210,7 @@ abstract class Template extends Base {
      * output as json
      */
     public function json() {
+        Debugger::info('json', 'Template', __LINE__, __METHOD__, __CLASS__);
         $headers      = &$this->headers;
         $templateVars = &$this->vars;
         $templateVars = array_diff_key($templateVars,array('title'=>1));
@@ -222,6 +223,7 @@ abstract class Template extends Base {
      * output as xml
      */
     public function xml() {
+        Debugger::info('xml', 'Template', __LINE__, __METHOD__, __CLASS__);
         $headers      = &$this->headers;
         $templateVars = &$this->vars;
         $templateVars = array_diff_key($templateVars,array('title'=>1));
@@ -234,6 +236,7 @@ abstract class Template extends Base {
      * output as template
      */
     public function out() {
+        Debugger::info('out', 'Template', __LINE__, __METHOD__, __CLASS__);
         $templateVars = &$this->vars;
         $templateFile = &$this->file;
         $metas        = &$this->metas;

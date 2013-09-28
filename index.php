@@ -12,6 +12,6 @@ print_r(json_encode(Laywork::$configuration));echo '<br>';
 */
 Laywork::start('in', false, array('a'=>'b'));
 $et = date('Y-m-d H:i:s').'.'.floor(microtime()*1000);
-echo '<pre>';print_r(array($st, $et));echo '</pre>';
+Debugger::debug(array($st, $et));
 //print_r(get_included_files());echo '<br>';
 ?>
