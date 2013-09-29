@@ -110,9 +110,11 @@ abstract class Action extends Base {
         if(is_array($config) && array_key_exists('template', $config)) {
             $template = Template::newInstance($config['template']);
             $template->initialize();
+            $template->preface = $preface;
         } else {
             $template = Template::newInstance();
             $template->initialize();
+            $template->preface = $preface;
         }
 
         return $this;

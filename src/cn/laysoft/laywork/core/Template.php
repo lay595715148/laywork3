@@ -42,6 +42,11 @@ abstract class Template extends Base {
         return self::$instance;
     }
     /**
+     * Preface对象
+     * @var Preface $preface
+     */
+    public $preface;
+    /**
      * 配置信息数组
      * @var array $config
      */
@@ -53,32 +58,32 @@ abstract class Template extends Base {
     protected $vars = array();
     /**
      * HTTP headers
-     * @var array $config
+     * @var array $headers
      */
     protected $headers = array();
     /**
      * HTML metas
-     * @var array $config
+     * @var array $metas
      */
     protected $metas = array();
     /**
      * HTML scripts
-     * @var array $config
+     * @var array $jses
      */
     protected $jses = array();
     /**
      * HTML scripts in the end
-     * @var array $config
+     * @var array $javascript
      */
     protected $javascript = array();
     /**
      * HTML css links
-     * @var array $config
+     * @var array $csses
      */
     protected $csses = array();
     /**
      * file path
-     * @var array $config
+     * @var string $file
      */
     protected $file;
     /**
