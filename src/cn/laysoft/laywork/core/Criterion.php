@@ -41,11 +41,11 @@ class Criterion extends Bean {
     const REG_FORMAT_NOT_EXISTS = ':(';
     const REG_FORMAT_LIKE = ':%';
     const REG_FORMAT_UNLIKE = ':^';
-    const REG_FORMAT_LEFT_LIKE = ':%(';
-    const REG_FORMAT_RIGHT_LIKE = ':%)';
-    const REG_FORMAT_LEFT_UNLIKE = ':^(';
-    const REG_FORMAT_RIGHT_UNLIKE = ':^)';
-    const REG_FORMAT_BETWEEN = ':<>';
+    const REG_FORMAT_LEFT_LIKE = ':[%';
+    const REG_FORMAT_RIGHT_LIKE = ':]%';
+    const REG_FORMAT_LEFT_UNLIKE = ':[^';
+    const REG_FORMAT_RIGHT_UNLIKE = ':]^';
+    const REG_FORMAT_BETWEEN = ':{}';
     const COMBINE_AND = 1;
     const COMBINE_OR = 2;
     const COMBINE_BRACKET_AND = 3;
@@ -54,6 +54,15 @@ class Criterion extends Bean {
     const COMBINE_NOT_OR = 6;
     const COMBINE_BRACKET_NOT_AND = 7;
     const COMBINE_BRACKET_NOT_OR = 8;
+    const COMBINE_REG_FORMAT_AND = '&';
+    const COMBINE_REG_FORMAT_OR = '|';
+    const COMBINE_REG_FORMAT_BRACKET_AND = '(&';
+    const COMBINE_REG_FORMAT_BRACKET_OR = '(|';
+    const COMBINE_REG_FORMAT_NOT_AND = '!&';
+    const COMBINE_REG_FORMAT_NOT_OR = '!|';
+    const COMBINE_REG_FORMAT_BRACKET_NOT_AND = '(!&';
+    const COMBINE_REG_FORMAT_BRACKET_NOT_OR = '(!|';
+    const EXPLODE_STRING = '&';
     const TYPE_STRING = 1;
     const TYPE_NUMBER = 2;
     
@@ -79,33 +88,146 @@ class Criterion extends Bean {
             )
         );
     }
+    /**
+     * 转换规则：&&为多个Criteria连接，&为多个Criterion连接；
+     * 每个Criteria字符串首字母为“&”或空时会与前一个Criteria进行AND连接
+     * 每个Criteria字符串首字母为“|”时会与前一个Criteria进行OR连接
+     * 每个Criterion字符串首字母为空时会与前一个Criterion进行AND连接
+     * 每个Criterion字符串首字母为“|”时会与前一个Criterion进行OR连接
+     */
     public static function parse($filter) {
-        if($filter && is_string($filter)) {
-            //$filters = explode(Cell::FLAG_CONNECT, $filter);
-            /*$pattern = '/([%|\|]{0,1})(.*)/';
-            preg_match($pattern, $filter, $matches);
+        $arrCriterion = array();
+        $pattern = '/^(.*)('.
+            preg_quote(self::REG_FORMAT_EQUAL).'|'.
+            preg_quote(self::REG_FORMAT_UNEQUAL).'|'.
+            preg_quote(self::REG_FORMAT_GREATER_EQUAL).'|'.
+            preg_quote(self::REG_FORMAT_LESS_EQUAL).'|'.
+            preg_quote(self::REG_FORMAT_GREATER).'|'.
+            preg_quote(self::REG_FORMAT_LESS).'|'.
+            preg_quote(self::REG_FORMAT_IN).'|'.
+            preg_quote(self::REG_FORMAT_NOT_IN).'|'.
+            preg_quote(self::REG_FORMAT_EXISTS).'|'.
+            preg_quote(self::REG_FORMAT_NOT_EXISTS).'|'.
+            preg_quote(self::REG_FORMAT_LIKE).'|'.
+            preg_quote(self::REG_FORMAT_UNLIKE).'|'.
+            preg_quote(self::REG_FORMAT_LEFT_LIKE).'|'.
+            preg_quote(self::REG_FORMAT_RIGHT_LIKE).'|'.
+            preg_quote(self::REG_FORMAT_LEFT_UNLIKE).'|'.
+            preg_quote(self::REG_FORMAT_RIGHT_UNLIKE).'|'.
+            preg_quote(self::REG_FORMAT_BETWEEN).
+            ')(.*)$/';
+        $combinePattern = '/^('.
+            preg_quote(self::COMBINE_REG_FORMAT_AND).'|'.
+            preg_quote(self::COMBINE_REG_FORMAT_OR).'|'.
+            preg_quote(self::COMBINE_REG_FORMAT_BRACKET_AND).'|'.
+            preg_quote(self::COMBINE_REG_FORMAT_BRACKET_OR).'|'.
+            preg_quote(self::COMBINE_REG_FORMAT_NOT_AND).'|'.
+            preg_quote(self::COMBINE_REG_FORMAT_NOT_OR).'|'.
+            preg_quote(self::COMBINE_REG_FORMAT_BRACKET_NOT_AND).'|'.
+            preg_quote(self::COMBINE_REG_FORMAT_BRACKET_NOT_OR).
+            ')(.*)$/';
             
-            $pattern = '/^(.*)(['.
-                preg_quote(self::REG_FORMAT_EQUAL).'|'.
-                preg_quote(self::REG_FORMAT_UNEQUAL).'|'.
-                preg_quote(self::REG_FORMAT_GREATER).'|'.
-                preg_quote(self::REG_FORMAT_LESS).'|'.
-                preg_quote(self::REG_FORMAT_GREATER_EQUAL).'|'.
-                preg_quote(self::REG_FORMAT_LESS_EQUAL).'|'.
-                preg_quote(self::REG_FORMAT_IN).'|'.
-                preg_quote(self::REG_FORMAT_NOT_IN).'|'.
-                preg_quote(self::REG_FORMAT_EXISTS).'|'.
-                preg_quote(self::REG_FORMAT_NOT_EXISTS).'|'.
-                preg_quote(self::REG_FORMAT_LIKE).'|'.
-                preg_quote(self::REG_FORMAT_UNLIKE).'|'.
-                preg_quote(self::REG_FORMAT_LEFT_LIKE).'|'.
-                preg_quote(self::REG_FORMAT_RIGHT_LIKE).'|'.
-                preg_quote(self::REG_FORMAT_LEFT_UNLIKE).'|'.
-                preg_quote(self::REG_FORMAT_RIGHT_UNLIKE).'|'.
-                preg_quote(self::REG_FORMAT_BETWEEN).']{1})(.*)$/';
-            preg_match($pattern, $filter, $matches);
-            $filters = explode(Cell::FLAG_CONNECT, $filter);*/
+        if($filter && is_string($filter)) {
+            $arrCriterionString = explode(self::EXPLODE_STRING, $filter);
+            foreach($arrCriterionString as $criterionString) {
+                $criterion = new Criterion();
+                $tmp = preg_match($combinePattern, $criterionString, $matches);
+                if($tmp) {//检测combine连接符
+                    switch($matches[1]) {
+                        case self::COMBINE_REG_FORMAT_AND:
+                            $criterion->combine = self::COMBINE_AND;
+                            break;
+                        case self::COMBINE_REG_FORMAT_OR:
+                            $criterion->combine = self::COMBINE_OR;
+                            break;
+                        case self::COMBINE_REG_FORMAT_BRACKET_AND:
+                            $criterion->combine = self::COMBINE_BRACKET_AND;
+                            break;
+                        case self::COMBINE_REG_FORMAT_BRACKET_OR:
+                            $criterion->combine = self::COMBINE_BRACKET_OR;
+                            break;
+                        case self::COMBINE_REG_FORMAT_NOT_AND:
+                            $criterion->combine = self::COMBINE_NOT_AND;
+                            break;
+                        case self::COMBINE_REG_FORMAT_NOT_OR:
+                            $criterion->combine = self::COMBINE_NOT_OR;
+                            break;
+                        case self::COMBINE_REG_FORMAT_BRACKET_NOT_AND:
+                            $criterion->combine = self::COMBINE_BRACKET_NOT_AND;
+                            break;
+                        case self::COMBINE_REG_FORMAT_BRACKET_NOT_OR:
+                            $criterion->combine = self::COMBINE_BRACKET_NOT_OR;
+                            break;
+                    }
+                    $criterionString = $matches[2];
+                }
+                
+                $tmp = preg_match($pattern, $criterionString, $matches);
+                if($tmp) {
+                    $criterion->name = $matches[1];
+                    $criterion->value = $matches[3];
+                    switch($matches[2]) {
+                        case self::REG_FORMAT_EQUAL:
+                            $criterion->operator = self::OPERATOR_EQUAL;
+                            break;
+                        case self::REG_FORMAT_UNEQUAL:
+                            $criterion->operator = self::OPERATOR_UNEQUAL;
+                            break;
+                        case self::REG_FORMAT_GREATER:
+                            $criterion->operator = self::OPERATOR_GREATER;
+                            break;
+                        case self::REG_FORMAT_LESS:
+                            $criterion->operator = self::OPERATOR_LESS;
+                            break;
+                        case self::REG_FORMAT_GREATER_EQUAL:
+                            $criterion->operator = self::OPERATOR_GREATER_EQUAL;
+                            break;
+                        case self::REG_FORMAT_LESS_EQUAL:
+                            $criterion->operator = self::OPERATOR_LESS_EQUAL;
+                            break;
+                        case self::REG_FORMAT_IN:
+                            $criterion->operator = self::OPERATOR_IN;
+                            break;
+                        case self::REG_FORMAT_NOT_IN:
+                            $criterion->operator = self::OPERATOR_NOT_IN;
+                            break;
+                        case self::REG_FORMAT_EXISTS:
+                            $criterion->operator = self::OPERATOR_EXISTS;
+                            break;
+                        case self::REG_FORMAT_NOT_EXISTS:
+                            $criterion->operator = self::OPERATOR_NOT_EXISTS;
+                            break;
+                        case self::REG_FORMAT_LIKE:
+                            $criterion->operator = self::OPERATOR_LIKE;
+                            break;
+                        case self::REG_FORMAT_UNLIKE:
+                            $criterion->operator = self::OPERATOR_UNLIKE;
+                            break;
+                        case self::REG_FORMAT_LEFT_LIKE:
+                            $criterion->operator = self::OPERATOR_LEFT_LIKE;
+                            break;
+                        case self::REG_FORMAT_RIGHT_LIKE:
+                            $criterion->operator = self::OPERATOR_RIGHT_LIKE;
+                            break;
+                        case self::REG_FORMAT_LEFT_UNLIKE:
+                            $criterion->operator = self::OPERATOR_LEFT_UNLIKE;
+                            break;
+                        case self::REG_FORMAT_RIGHT_UNLIKE:
+                            $criterion->operator = self::OPERATOR_RIGHT_UNLIKE;
+                            break;
+                        case self::REG_FORMAT_BETWEEN:
+                            $criterion->operator = self::OPERATOR_BETWEEN;
+                            break;
+                    }
+                    $arrCriterion[] = $criterion;
+                } else {
+                    //TODO warning not regular
+                }
+            }
+        } else {
+            //TODO warning filter isnot string
         }
+        return $arrCriterion;
     }
     /**
      * 将Criterion对象转换为SQL
@@ -252,11 +374,15 @@ class Criterion extends Bean {
                 break;
             case self::OPERATOR_BETWEEN:
                 if($subquery !== true) {
-                    $value = explode(';', $value);
+                    $value = explode(',', $value);
                     foreach($value as &$tmp) {
                         if($escape === true) $tmp = mysql_escape_string($tmp);
                     }
-                    $sql = "{$backquote}{$name}{$backquote} BETWEEN {$forcequote}{$value[0]}{$forcequote} AND {$forcequote}{$value[1]}{$forcequote}";
+                    if(count($value) >= 2) {
+                        $sql = "{$backquote}{$name}{$backquote} BETWEEN {$forcequote}{$value[0]}{$forcequote} AND {$forcequote}{$value[1]}{$forcequote}";
+                    } else {
+                        $sql = '0';
+                    }
                 } else {
                     $sql = '0';
                 }

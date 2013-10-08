@@ -188,7 +188,7 @@ abstract class Bean extends Base {
      * @param string $name
      * @return mixed|void
      */
-    public function __get($name) {
+    public function &__get($name) {
         $properties = &$this->properties;
         
         if(array_key_exists($name, $properties)) {

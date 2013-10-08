@@ -55,7 +55,7 @@ abstract class Base {
      * @param string $name
      * @return void
      */
-    public function __get($name) {
+    public function &__get($name) {
         if(!property_exists($this,$name)) {
             throw new PropertyNotFoundException('There is no property:'.$name.' in class:'.get_class($this));
         }
