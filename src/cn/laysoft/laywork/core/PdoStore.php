@@ -32,6 +32,7 @@ class PdoStore extends Mysql {
      * 打开数据库PDO连接
      */
     public function connect() {
+        Debugger::info('connect', 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         $link   = &$this->link;
 

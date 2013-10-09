@@ -12,10 +12,13 @@ if(!defined('INIT_LAYWORK')) { exit; }
 
 global $_LAYWORKPATH,$_ROOTPATH;
 
-$_ROOTPATH = $_LAYWORKPATH = str_replace("\\", "/", dirname(__DIR__));//Returns parent directory's path
+$_LAYWORKPATH = str_replace("\\", "/", dirname(__DIR__));//Returns parent directory's path
+$_ROOTPATH = str_replace("\\", "/", dirname(dirname(__DIR__)));
 
 /**
  * <p>Laywork主类</p>
+ * $_LAYWORKPATH:%LAYWORK_PATH%,Laywork里的所有类文件的路径都是相对于此。
+ * $_ROOTPATH:%LAYWORK_PATH%的父目录路径，所有配置文件的路径是相对于此。
  * 
  * @author Lay Li
  */
@@ -65,7 +68,11 @@ final class Laywork {
      */
     public static function rootpath($rootpath = '') {
         global $_ROOTPATH;
-        $_ROOTPATH = str_replace("\\", "/", is_dir($rootpath)?$rootpath:dirname(__DIR__));
+        if(is_dir($rootpath)) {
+            $_ROOTPATH = str_replace("\\", "/", $rootpath);
+        } else {
+            //TODO warning given path isnot a real path
+        }
     }
     /**
      * set laywork root path
@@ -74,7 +81,11 @@ final class Laywork {
      */
     public static function layworkpath($layworkpath = '') {
         global $_LAYWORKPATH;
-        $_LAYWORKPATH = str_replace("\\", "/", is_dir($layworkpath)?$layworkpath:dirname(__DIR__));
+        if(is_dir($layworkpath)) {
+            $_LAYWORKPATH = str_replace("\\", "/", $layworkpath);
+        } else {
+            //TODO warning given path isnot a real path
+        }
     }
     /**
      * initialize autoload function
@@ -163,7 +174,8 @@ final class Laywork {
             }
         }
         if(!class_exists($classname) && !interface_exists($classname)) {
-            throw new AutoloadException('class:'.$classname.' autoload error');
+            //throw new AutoloadException('class:'.$classname.' autoload error');
+            //TODO warning no class mapping by Laywork class autoload function
         }
     }
     /**

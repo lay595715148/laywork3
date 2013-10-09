@@ -33,7 +33,7 @@ class Mysql extends Store {
      */
     public function initialize() {
         //默认懒连接
-        if(isset($this->config['lazy']) && !$this->config['lazy']) {
+        if(isset($this->config['lazy']) && $this->config['lazy'] === true) {
             $this->connect();
         }
         return parent::initialize();
