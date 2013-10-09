@@ -50,6 +50,8 @@ final class Laywork {
         'Arrange' => '/cn/laysoft/laywork/core-PHP5.2/Arrange.class.php',
         'Cell' => '/cn/laysoft/laywork/core-PHP5.2/Cell.class.php',
         'Condition' => '/cn/laysoft/laywork/core-PHP5.2/Condition.class.php',
+        'Criteria' => '/cn/laysoft/laywork/core-PHP5.2/Criteria.class.php',
+        'Criterion' => '/cn/laysoft/laywork/core-PHP5.2/Criterion.class.php',
         'TableBean' => '/cn/laysoft/laywork/core-PHP5.2/TableBean.class.php',
         'Template' => '/cn/laysoft/laywork/core-PHP5.2/Template.class.php',
         'Parser' => '/cn/laysoft/laywork/core-PHP5.2/Parser.class.php',
@@ -105,7 +107,7 @@ final class Laywork {
         global $_LAYWORKPATH;
         $_CLASSPATH = $_LAYWORKPATH.'/src';
         $classes = &self::$classes;
-        $suffixes = array('.php','.class.php','.inc');
+        $suffixes = array('.php', '.class.php', '.inc');
 
         if(array_key_exists($classname, $classes)) {//全名映射
             if(is_file($classes[$classname])) {
@@ -119,7 +121,7 @@ final class Laywork {
                 Debugger::warn('Not found class mapping file by name:'.$classname, 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
             }
         } else {
-            $tmparr = explode("\\",$classname);
+            $tmparr = explode("\\", $classname);
             if(count($tmparr) > 1) {//if is namespace
                 $name = array_pop($tmparr);
                 $path = $_CLASSPATH.'/'.implode('/', $tmparr);
