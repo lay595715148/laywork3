@@ -56,6 +56,7 @@ class TestAction extends Action {
         Debugger::debug("Criteria::parse('{$item}')\n");
         Debugger::debug($ret);
         Debugger::debug(Laywork::get());
+        new MyClass();
     }
 }
 
