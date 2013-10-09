@@ -30,9 +30,9 @@ abstract class Action extends Base {
      * @param $config default is empty
      * @return Action
      */
-    public static function newInstance($name, $config = '') {
+    public static function newInstance($name = '', $config = '') {
         $config = is_array($config)?$config:Laywork::actionConfig($name);
-        $classname = isset($config['classname'])?$config['classname']:'DemoAction';
+        $classname = $config && isset($config['classname'])?$config['classname']:'DemoAction';
         Debugger::info("new action($classname) instance", 'Action', __LINE__, __METHOD__, __CLASS__);
         
         if(self::$instance == null) {

@@ -24,9 +24,9 @@ abstract class Service extends Base {
      * @param $config default is empty
      * @return Service
      */
-    public static function newInstance($name, $config = '') {
+    public static function newInstance($name = '', $config = '') {
         $config = is_array($config)?$config:Laywork::serviceConfig($name);
-        $classname = isset($config['classname'])?$config['classname']:'DemoService';
+        $classname = $config && isset($config['classname'])?$config['classname']:'DemoService';
         Debugger::info("new service($classname) instance", 'Service', __LINE__, __METHOD__, __CLASS__);
         
         if(!isset(self::$instances[$name])) {

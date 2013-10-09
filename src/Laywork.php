@@ -184,7 +184,7 @@ final class Laywork {
      * @param $default if nothing by $keystr,the default value
      * @return mixed
      */
-    public static function get($keystr, $default = null) {
+    public static function get($keystr = '', $default = null) {
         $node = &self::$configuration;
         if(is_string($keystr) && $keystr) {
             $keys = explode('.', $keystr);
@@ -511,7 +511,7 @@ final class Laywork {
      * @param $method method name,default is empty
      * @param $params param array,default is empty
      */
-    public static function start($action = '', $method = '', $params = '') {
+    public static function start($action = 'index', $method = '', $params = '') {
         Debugger::info('start application', 'APPLICATION', __LINE__, __METHOD__, __CLASS__);
         try {
             self::getInstance()->run($action, $method, $params);

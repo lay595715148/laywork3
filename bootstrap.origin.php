@@ -14,7 +14,10 @@ require_once __DIR__.'/lib/PHP-Error/src/php_error.php';\php_error\reportErrors(
 require_once __DIR__.'/src/Laywork.php';
 //Layload see https://github.com/lay595715148/layload
 require_once __DIR__.'/lib/layload/layload.php';
-Layload::loadpath(__DIR__.'/example');
-Layload::classpath(__DIR__.'/example/classes');
-Layload::initialize(true);
+/**
+ * TODO
+ * Layload::loadpath(__DIR__);
+ * Layload::classpath(__DIR__);
+ * Layload::initialize();
+ */
 ?>

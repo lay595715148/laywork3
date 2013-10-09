@@ -1,7 +1,7 @@
 <?php
 return array(
     'actions' => array(
-        'in' => array(
+        'index' => array(
             'classname' => 'cn\laysoft\laywork\demo\DemoAction',
             'services' => array('in', 'out'),
             'preface' => 'out'
