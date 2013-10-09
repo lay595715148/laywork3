@@ -1,5 +1,5 @@
 <?php
-include_once('./bootstrap.empty.php');
+include_once('./bootstrap.origin.php');
 //echo '<pre>';print_r($_SERVER);echo '</pre>';exit;
 use cn\laysoft\laywork\core\Criteria;
 use cn\laysoft\laywork\core\Criterion;
@@ -55,6 +55,7 @@ class TestAction extends Action {
         //echo "<pre>Criteria::parse('{$item}')\n";print_r($ret);echo '</pre>';
         Debugger::debug("Criteria::parse('{$item}')\n");
         Debugger::debug($ret);
+        Debugger::debug(Laywork::get());
     }
 }
 

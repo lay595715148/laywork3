@@ -21,5 +21,5 @@ Layload::loadpath(__DIR__.'/inc');
 Layload::classpath(__DIR__.'/inc/classes');
 Layload::initialize();
 
-Laywork::start();
+//Laywork::start();
 ?>

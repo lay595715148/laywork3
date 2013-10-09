@@ -216,7 +216,7 @@ final class Laywork {
             foreach($keys as $index=>$key) {
                 if(isset($node[$key]) && $index === $count - 1) {
                     //TODO warning has been configured by this name
-                    Debugger::warn('$configuration[...]["'.$key.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                    Debugger::warn('$configuration[...]["'.$key.'"] has been configured in "'.$keystr.'"', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
                     $node[$key] = $value;
                 } else if(isset($node[$key])) {
                     $node = &$node[$key];
@@ -399,6 +399,7 @@ final class Laywork {
         global $_ROOTPATH;
         $configurations = &self::$configuration;
         if(is_array($configuration) && !$isFile) {
+            //Debugger::info('$configuration:'.json_encode($configuration), 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
             foreach($configuration as $key=>$item) {
                 if(is_string($key) && $key) {//key is not null
                     switch($key) {
@@ -467,8 +468,10 @@ final class Laywork {
                                 foreach($item as $file) {
                                     self::configure($file);
                                 }
+                            } else if(is_string($item)) {
+                                self::configure($item);
                             } else {
-                                //TODO warning files is not an array
+                                //TODO warning files is not an array or string
                                 Debugger::warn('$configuration["files"] is not an array', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
                             }
                             break;
@@ -491,12 +494,14 @@ final class Laywork {
                     self::configure($configfile);
                 }
             }
-        } else {
+        } else if(is_string($configuration)) {
+            Debugger::info('configure file:'.$configuration, 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
             if(is_file($configuration)) {
                 $tmparr = include_once $configuration;
             } else if(is_file($_ROOTPATH.$configuration)) {
                 $tmparr = include_once $_ROOTPATH.$configuration;
             } else {
+                Debugger::warn($configuration.' is not a real file', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
                 $tmparr = array();
             }
             
@@ -505,6 +510,9 @@ final class Laywork {
             } else {
                 self::configure($tmparr, false);
             }
+        } else {
+            //TODO warning unkown configuration type
+            Debugger::warn('unkown configuration type', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
         }
     }
     /**
