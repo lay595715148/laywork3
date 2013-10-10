@@ -1,5 +1,5 @@
 <?php
 return array(
-    'files' => '/laywork/inc/config.test.php'
+    'files' => '/laywork/inc/config.dev.php'
 );
 ?>

@@ -16,7 +16,8 @@ class DemoAction extends Action {
         //throw new Exception('test exception');
         //Debugger::debug(array('debug'=>Laywork::get('debug')), 'Debugger', __LINE__, __METHOD__, __CLASS__);
         //new \MysqlServer();
-        $ret = $this->services['out']->doit();
+        //$ret = $this->services['out']->doit();
+        echo 'Hello World!';
     }
 }
 ?>

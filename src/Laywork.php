@@ -28,12 +28,6 @@ final class Laywork {
      * @staticvar configuration
      */
     public static $configuration = array(
-        'actions' => array(),
-        'services' => array(),
-        'stores' => array(),
-        'beans' => array(),
-        'prefaces' => array(),
-        'templates' => array()
     );
     /**
      * @staticvar all class mappings
@@ -242,7 +236,7 @@ final class Laywork {
             //TODO warning has been configured by this name
             Debugger::warn('$configuration["actions"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
         } else if(is_string($name) || is_numeric($name)) {
-            Debugger::info('action('.$name.')', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure action:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
             self::set('actions.'.$name, $config);
             //TODO configure an action
         }
@@ -260,7 +254,7 @@ final class Laywork {
             //TODO warning has been configured by this name
             Debugger::warn('$configuration["services"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
         } else {
-            Debugger::info('service('.$name.')', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure service:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
             self::set('services.'.$name, $config);
             //TODO configure a service
         }
@@ -278,7 +272,7 @@ final class Laywork {
             //TODO warning has been configured by this name
             Debugger::warn('$configuration["stores"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
         } else {
-            Debugger::info('store('.$name.')', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure store:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
             self::set('stores.'.$name, $config);
             //TODO configure a store
         }
@@ -297,7 +291,7 @@ final class Laywork {
             //TODO warning has been configured by this name
             Debugger::warn('$configuration["beans"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
         } else {
-            Debugger::info('bean('.$name.')', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure bean:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
             self::set('beans.'.$name, $config);
             //TODO configure a bean
         }
@@ -316,7 +310,7 @@ final class Laywork {
             //TODO warning has preface configured by this name
             Debugger::warn('$configuration["prefaces"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
         } else {
-            Debugger::info('preface('.$name.')', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure preface:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
             self::set('prefaces.'.$name, $config);
             //TODO configure a preface
         }
@@ -335,7 +329,7 @@ final class Laywork {
             //TODO warning has template configured by this name
             Debugger::warn('$configuration["templates"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
         } else {
-            Debugger::info('template('.$name.')', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure template:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
             self::set('templates.'.$name, $config);
             //TODO configure a template
         }

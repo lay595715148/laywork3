@@ -1,5 +1,5 @@
 <?php
 return array(
-    'env' => 'test'
+    'files' => '/laywork/example/include/config.test.php'
 );
 ?>
