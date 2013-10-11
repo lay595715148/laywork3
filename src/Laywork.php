@@ -562,7 +562,9 @@ final class Laywork {
     }
 }
 
-class_alias('Laywork', 'W');//Layload class alias
+if(!class_exists('W', false)) {
+    class_alias('Laywork', 'W');//Layload class alias
+}
 
 class AutoloadException extends Exception {}
 ?>

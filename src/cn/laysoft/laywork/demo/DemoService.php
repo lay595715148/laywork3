@@ -5,6 +5,11 @@ use Laywork,Debugger;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 class DemoService extends Service {
+    public function __call($method, $arguments) {
+        if(!method_exists($this, $method)) {
+            echo "Using demoService,please check your action-service configuration\n<br>";
+        }
+    }
     public function doit() {
         Debugger::info('doit', 'DemoService', __LINE__, __METHOD__, __CLASS__);
         $bean = $this->bean;

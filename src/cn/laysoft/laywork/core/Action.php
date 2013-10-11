@@ -59,7 +59,7 @@ abstract class Action extends Base {
     /**
      * @var array 存放自注入的AbstractBean对象
      */
-    protected $beans = array();
+    //protected $beans = array();
     /**
      * @var AbstractTemplate 模板引擎对象
      */
@@ -118,6 +118,23 @@ abstract class Action extends Base {
         }
 
         return $this;
+    }
+    /**
+     * 获取以某一个Service对象
+     * @param string $name
+     * @return Service
+     */
+    protected function service($name) {
+        $services = &$this->services;
+        if(array_key_exists($name, $services)) {
+            return $services[$name];
+        } else if(is_string($name)) {
+            $services[$name] = Service::newInstance($name);
+            $services[$name]->initialize();
+            return $services[$name];
+        } else {
+            return $services['demo'];
+        }
     }
     /**
      * 默认执行方法
