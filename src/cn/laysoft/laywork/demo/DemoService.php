@@ -7,7 +7,7 @@ if(!defined('INIT_LAYWORK')) { exit; }
 class DemoService extends Service {
     public function __call($method, $arguments) {
         if(!method_exists($this, $method)) {
-            echo "Using demoService,please check your action-service configuration\n<br>";
+            echo "Using DemoService,please check your action-service configuration\n<br>";
         }
     }
     public function doit() {
