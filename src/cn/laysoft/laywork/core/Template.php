@@ -139,7 +139,12 @@ abstract class Template extends Base {
      * @param string $filepath file path
      */
     public function file($filepath) {
-        $this->file = $filepath;
+        global $_ROOTPATH;
+        if(strpos($filepath, $_ROOTPATH) === 0) {
+            $this->file = $filepath;
+        } else {
+            $this->file = $_ROOTPATH.$filepath;
+        }
     }
     /**
      * set include theme template file path
@@ -147,12 +152,18 @@ abstract class Template extends Base {
      */
     public function template($filepath) {
         global $_ROOTPATH;
-        $themes = Laywork::get('themes');
-        $theme = Laywork::get('theme');
-        if(array_key_exists($theme, $themes)) {
-            $this->file = $_ROOTPATH.$themes[$theme]['dir'].$filepath;
-        } else {
+        $filepath = str_replace("\\", "/", $filepath);
+        if(strpos($filepath, $_ROOTPATH) === 0) {
             $this->file = $filepath;
+        } else {
+            $themes = Laywork::get('themes');
+            $theme = Laywork::get('theme');
+            if($themes && $theme && array_key_exists($theme, $themes)) {
+                if(!isset($themes[$theme]['dir'])) $themes[$theme]['dir'] = '';
+                $this->file = $_ROOTPATH.$themes[$theme]['dir'].$filepath;
+            } else {
+                $this->file = $_ROOTPATH.$filepath;
+            }
         }
     }
     /**
