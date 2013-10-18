@@ -21,9 +21,10 @@ abstract class Bean extends Base {
      * @param $config default is empty
      * @return Bean
      */
-    public static function newInstance($name) {
-        $config = is_array($config)?$config:Laywork::beanConfig($name);
-        $classname = isset($config['classname'])?$config['classname']:'DemoBean';
+    public static function newInstance($name = '') {
+        $config = Laywork::beanConfig($name);
+        $classname = $config && isset($config['classname'])?$config['classname']:'DemoBean';
+        Debugger::info("new bean($classname) instance", 'Bean', __LINE__, __METHOD__, __CLASS__);
         
         if(isset($config['classname'])) {
             $instance = new $classname();
@@ -183,7 +184,7 @@ abstract class Bean extends Base {
      * @param string $name
      * @return mixed|void
      */
-    public function __get($name) {
+    public function &__get($name) {
         $properties = &$this->properties;
         
         if(array_key_exists($name, $properties)) {

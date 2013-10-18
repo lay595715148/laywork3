@@ -2,20 +2,26 @@
 if(!defined('INIT_LAYWORK')) { exit; }
 
 class DemoService extends Service {
+    public function __call($method, $arguments) {
+        if(!method_exists($this, $method)) {
+            echo "Using DemoService,please check your action-service configuration\n<br>";
+        }
+    }
     public function doit() {
+        Debugger::info('doit', 'DemoService', __LINE__, __METHOD__, __CLASS__);
         $bean = $this->bean;
         $fields = $bean->toInsertFields();
         $bean->setName(rand(1,99));
         $bean->setType(1);
         $values = $bean->toValues();
         $ret = $this->store->insert($bean, $fields, $values);
-        echo '<pre>';print_r($ret);echo '</pre>';
+        Debugger::debug($ret, 'DemoService', __LINE__, __METHOD__, __CLASS__);
         
         $fields = $bean->toFields();
         $ret = $this->store->select($bean, $fields);
         $rows = $this->store->toArray();
         $arr = $bean->rowsToArray($rows);
-        echo '<pre>';print_r($arr);echo '</pre>';
+        Debugger::debug($arr, 'DemoService', __LINE__, __METHOD__, __CLASS__);
         
         $tyf = $bean->toField('type');
         $tyv = $bean->getType();
@@ -23,24 +29,24 @@ class DemoService extends Service {
         $bean->setName('ob');
         $values = $bean->toValues();
         $ret = $this->store->update($bean, array($naf), $values, array($tyf => $tyv));
-        echo '<pre>';print_r($ret);echo '</pre>';
+        Debugger::debug($ret, 'DemoService', __LINE__, __METHOD__, __CLASS__);
         
         $fields = $bean->toFields();
         $ret = $this->store->select($bean, $fields);
         $rows = $this->store->toArray(2);
         $arr = $bean->rowsToArray($rows);
-        echo '<pre>';print_r($arr);echo '</pre>';
+        Debugger::debug($arr, 'DemoService', __LINE__, __METHOD__, __CLASS__);
         
         $tyf = $bean->toField('type');
         $tyv = $bean->getType();
         $ret = $this->store->delete($bean, array($tyf => $tyv));
-        echo '<pre>';print_r($ret);echo '</pre>';
+        Debugger::debug($ret, 'DemoService', __LINE__, __METHOD__, __CLASS__);
         
         $fields = $bean->toFields();
         $ret = $this->store->select($bean, $fields);
         $rows = $this->store->toArray();
         $arr = $bean->rowsToArray($rows);
-        echo '<pre>';print_r($arr);echo '</pre>';
+        Debugger::debug($arr, 'DemoService', __LINE__, __METHOD__, __CLASS__);
         
         return $arr;
     }

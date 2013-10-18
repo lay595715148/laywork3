@@ -6,7 +6,7 @@
  */
 if(!defined('INIT_LAYWORK')) { exit; }
 
-class util extends base {
+class Util extends base {
     public static function ip() {
         if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
             $ip = getenv('HTTP_CLIENT_IP');

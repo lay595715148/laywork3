@@ -21,9 +21,10 @@ abstract class Store extends Base {
      * @param $config default is empty
      * @return Store
      */
-    public static function newInstance($name, $bean = null, $config = '') {
+    public static function newInstance($name = '', $bean = null, $config = '') {
         $config = is_array($config)?$config:Laywork::storeConfig($name);
-        $classname = isset($config['classname'])?$config['classname']:'DemoStore';
+        $classname = $config && isset($config['classname'])?$config['classname']:'DemoStore';
+        Debugger::info("new store($classname) instance", 'Store', __LINE__, __METHOD__, __CLASS__);
         
         if(!isset(self::$instances[$name])) {
             if(isset($config['classname'])) {
@@ -60,6 +61,7 @@ abstract class Store extends Base {
      * 初始化
      */
     public function initialize() {
+        Debugger::info('initialize', 'Store', __LINE__, __METHOD__, __CLASS__);
         return $this;
     }
 }

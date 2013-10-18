@@ -6,8 +6,6 @@
  * @author Lay Li
  * @version: 0.0.1 (build 130911)
  */
-
-use cn\laysoft\laywork\core\Action;//if using namespace
 if(!defined('INIT_LAYWORK')) { exit; }
 
 global $_LAYWORKPATH,$_ROOTPATH;

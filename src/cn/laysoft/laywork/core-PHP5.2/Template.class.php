@@ -12,21 +12,37 @@ if(!defined('INIT_LAYWORK')) { exit; }
  */
 abstract class Template extends Base {
     /**
-     * @staticvar action instance
+     * @staticvar Template instance
      */
     private static $instance = null;
     /**
-     * get action instance 
-     * @param $name name of action
+     * get Template instance 
+     * @param $name name of Template
      * @param $config default is empty
-     * @return Action
+     * @return Template
      */
-    public static function newInstance($config = '') {
+    public static function newInstance($name = '', $config = '') {
+        $config = is_array($config)?$config:Laywork::templateConfig($name);
+        $classname = isset($config['classname'])?$config['classname']:'DemoTemplate';
+        Debugger::info("new template($classname) instance", 'Template', __LINE__, __METHOD__, __CLASS__);
+        
         if(self::$instance == null) {
-            self::$instance = new DemoTemplate($config);
+            if(isset($config['classname'])) {
+                self::$instance = new $classname($config);
+            } else {
+                self::$instance = new DemoTemplate($config);
+            }
+            if(!(self::$instance instanceof Template)) {
+                self::$instance = new DemoTemplate($config);
+            }
         }
         return self::$instance;
     }
+    /**
+     * Preface对象
+     * @var Preface $preface
+     */
+    public $preface;
     /**
      * 配置信息数组
      * @var array $config
@@ -39,32 +55,32 @@ abstract class Template extends Base {
     protected $vars = array();
     /**
      * HTTP headers
-     * @var array $config
+     * @var array $headers
      */
     protected $headers = array();
     /**
      * HTML metas
-     * @var array $config
+     * @var array $metas
      */
     protected $metas = array();
     /**
      * HTML scripts
-     * @var array $config
+     * @var array $jses
      */
     protected $jses = array();
     /**
      * HTML scripts in the end
-     * @var array $config
+     * @var array $javascript
      */
     protected $javascript = array();
     /**
      * HTML css links
-     * @var array $config
+     * @var array $csses
      */
     protected $csses = array();
     /**
      * file path
-     * @var array $config
+     * @var string $file
      */
     protected $file;
     /**
@@ -78,6 +94,7 @@ abstract class Template extends Base {
      * 初始化
      */
     public function initialize() {//must return $this
+        Debugger::info('initialize', 'Template', __LINE__, __METHOD__, __CLASS__);
         return $this;
     }
     /**
@@ -119,7 +136,12 @@ abstract class Template extends Base {
      * @param string $filepath file path
      */
     public function file($filepath) {
-        $this->file = $filepath;
+        global $_ROOTPATH;
+        if(strpos($filepath, $_ROOTPATH) === 0) {
+            $this->file = $filepath;
+        } else {
+            $this->file = $_ROOTPATH.$filepath;
+        }
     }
     /**
      * set include theme template file path
@@ -127,12 +149,18 @@ abstract class Template extends Base {
      */
     public function template($filepath) {
         global $_ROOTPATH;
-        $themes = Laywork::get('themes');
-        $theme = Laywork::get('theme');
-        if(array_key_exists($theme, $themes)) {
-            $this->file = $_ROOTPATH.$themes[$theme]['dir'].$filepath;
-        } else {
+        $filepath = str_replace("\\", "/", $filepath);
+        if(strpos($filepath, $_ROOTPATH) === 0) {
             $this->file = $filepath;
+        } else {
+            $themes = Laywork::get('themes');
+            $theme = Laywork::get('theme');
+            if($themes && $theme && array_key_exists($theme, $themes)) {
+                if(!isset($themes[$theme]['dir'])) $themes[$theme]['dir'] = '';
+                $this->file = $_ROOTPATH.$themes[$theme]['dir'].$filepath;
+            } else {
+                $this->file = $_ROOTPATH.$filepath;
+            }
         }
     }
     /**
@@ -195,6 +223,7 @@ abstract class Template extends Base {
      * output as json
      */
     public function json() {
+        Debugger::info('json', 'Template', __LINE__, __METHOD__, __CLASS__);
         $headers      = &$this->headers;
         $templateVars = &$this->vars;
         $templateVars = array_diff_key($templateVars,array('title'=>1));
@@ -207,6 +236,7 @@ abstract class Template extends Base {
      * output as xml
      */
     public function xml() {
+        Debugger::info('xml', 'Template', __LINE__, __METHOD__, __CLASS__);
         $headers      = &$this->headers;
         $templateVars = &$this->vars;
         $templateVars = array_diff_key($templateVars,array('title'=>1));
@@ -219,6 +249,7 @@ abstract class Template extends Base {
      * output as template
      */
     public function out() {
+        Debugger::info('out', 'Template', __LINE__, __METHOD__, __CLASS__);
         $templateVars = &$this->vars;
         $templateFile = &$this->file;
         $metas        = &$this->metas;

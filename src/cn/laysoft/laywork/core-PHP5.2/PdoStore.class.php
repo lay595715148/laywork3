@@ -10,32 +10,23 @@ class PdoStore extends Mysql {
     /**
      * @var PDO 数据库PDO连接
      */
-    private $link;
+    protected $link;
     /**
      * @var PDOStatement 数据库PDO操作结果
      */
-    private $result;
+    protected $result;
     
     /**
      * 析构
      */
     public function __destruct() {
-        if($this->link) mysql_close($this->link);
-    }
-    /**
-     * 初始化
-     */
-    public function initialize() {
-        //默认懒连接
-        if(isset($this->config['lazy']) && !$this->config['lazy']) {
-            $this->connect();
-        }
-        return $this;
+        if($this->link) $this->link = null;
     }
     /**
      * 打开数据库PDO连接
      */
     public function connect() {
+        Debugger::info('connect', 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         $link   = &$this->link;
 
@@ -44,7 +35,7 @@ class PdoStore extends Mysql {
         $user = isset($config['username'])?$config['username']:$config['user'];
         $password = $config['password'];
         $database = isset($config['database'])?$config['database']:$config['schema'];
-        $options = is_array($config['options'])?$config['options']:array();
+        $options = (isset($config['options']) && is_array($config['options']))?$config['options']:array();
         $dsn = "$driver:dbname=$database;host=$host";
 
         $link = new PDO($dsn, $user, $password, $options);
@@ -67,6 +58,7 @@ class PdoStore extends Mysql {
      * @return mixed
      */
     public function query($sql, $encoding = '', $showSQL = false) {
+        Debugger::info('query', 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         $result = &$this->result;
         $link   = &$this->link;
@@ -75,16 +67,18 @@ class PdoStore extends Mysql {
         if($result instanceof PDOStatement) { $result->closeCursor(); }
         
         if($encoding) {
-            $link->query('SET NAMES '.$encoding, $link);
+            $link->query('SET NAMES '.$encoding);
         } else if($config['encoding']) {
             $encoding = &$config['encoding'];
-            $link->query('SET NAMES '.$encoding, $link);
+            $link->query('SET NAMES '.$encoding);
         }
         if($showSQL) {
-            echo '<pre>'.$sql.'</pre>';
+            //echo '<pre>'.$sql.'</pre>';
+            Debugger::info('showsql:'.$sql, 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         } else if($config['showsql']) {
             $encoding = &$config['showsql'];
-            echo '<pre>'.$sql.'</pre>';
+            //echo '<pre>'.$sql.'</pre>';
+            Debugger::info('showsql:'.$sql, 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         }
         if($sql) {
             $result = $link->query($sql);
@@ -101,6 +95,7 @@ class PdoStore extends Mysql {
      * @return mixed
      */
     public function exec($sql, $encoding = '', $showSQL = false) {
+        Debugger::info('exec', 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         $result = &$this->result;
         $link   = &$this->link;
@@ -109,16 +104,18 @@ class PdoStore extends Mysql {
         if($result instanceof PDOStatement) { $result->closeCursor(); }
         
         if($encoding) {
-            $link->query('SET NAMES '.$encoding, $link);
+            $link->query('SET NAMES '.$encoding);
         } else if($config['encoding']) {
             $encoding = &$config['encoding'];
-            $link->query('SET NAMES '.$encoding, $link);
+            $link->query('SET NAMES '.$encoding);
         }
         if($showSQL) {
-            echo '<pre>'.$sql.'</pre>';
+            //echo '<pre>'.$sql.'</pre>';
+            Debugger::info('showsql:'.$sql, 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         } else if($config['showsql']) {
             $encoding = &$config['showsql'];
-            echo '<pre>'.$sql.'</pre>';
+            //echo '<pre>'.$sql.'</pre>';
+            Debugger::info('showsql:'.$sql, 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         }
         if($sql) {
             $result = $link->exec($sql);
@@ -141,6 +138,7 @@ class PdoStore extends Mysql {
         $result = &$this->result;
 
         $sql = $this->insertSQL($table, $fields, $values, $replace);
+        Debugger::info('insert', 'Mysql', __LINE__, __METHOD__, __CLASS__);
         $result = $this->exec($sql);
 
         return ($returnid)?$link->lastInsertId():$result;
@@ -155,6 +153,7 @@ class PdoStore extends Mysql {
         $result = &$this->result;
 
         $sql = $this->deleteSQL($table, $condition);
+        Debugger::info('delete', 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         $result = $this->exec($sql);
 
         return $result;
@@ -171,9 +170,24 @@ class PdoStore extends Mysql {
         $result = &$this->result;
 
         $sql = $this->updateSQL($table, $fields, $values, $condition);
+        Debugger::info('update', 'PdoStore', __LINE__, __METHOD__, __CLASS__);
         $result = $this->exec($sql);
 
         return $result;
+    }
+    /**
+     * pdo执行select语句
+     * @param TableBean $table 表名
+     * @param array|string $fields 表字段数组
+     * @param array|string|Condition $condition 条件
+     * @param array|string $group 
+     * @param array|string|Arrange $order
+     * @param string $limit 
+     * @return mixed
+     */
+    public function select($table, $fields = '', $condition = '', $group = '', $order = '', $limit = '') {//$group is not useful
+        Debugger::info('select', 'PdoStore', __LINE__, __METHOD__, __CLASS__);
+        return parent::select($table, $fields, $condition, $group, $order, $limit);
     }
     
     /**

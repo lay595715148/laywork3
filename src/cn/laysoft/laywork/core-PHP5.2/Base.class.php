@@ -21,7 +21,7 @@ abstract class Base {
      * @param mixed $arguments
      */
     public function __call($method, $arguments) {
-        if(!method_exists($this,$method)) {
+        if(!method_exists($this, $method)) {
             throw new MethodNotFoundException('There is no object method:'.$method.'( ) in class:'.get_class($this));
         }
     }
@@ -31,7 +31,7 @@ abstract class Base {
      * @param mixed $arguments
      */
     public static function __callStatic($method, $arguments) {
-        if(!method_exists($this,$method)) {
+        if(!method_exists($this, $method)) {
             throw new StaticMethodNotFoundException('There is no static method:'.$method.'( ) in class:'.get_class($this));
         }
     }
@@ -43,7 +43,7 @@ abstract class Base {
      * @return void
      */
     public function __set($name, $value) {
-        if(!property_exists($this,$name)) {
+        if(!property_exists($this, $name)) {
             throw new PropertyNotFoundException('There is no property:'.$name.' in class:'.get_class($this));
         }
     }
@@ -53,8 +53,8 @@ abstract class Base {
      * @param string $name
      * @return void
      */
-    public function __get($name) {
-        if(!property_exists($this,$name)) {
+    public function &__get($name) {
+        if(!property_exists($this, $name)) {
             throw new PropertyNotFoundException('There is no property:'.$name.' in class:'.get_class($this));
         }
     }

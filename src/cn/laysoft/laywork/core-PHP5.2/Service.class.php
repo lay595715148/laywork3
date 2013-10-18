@@ -21,9 +21,10 @@ abstract class Service extends Base {
      * @param $config default is empty
      * @return Service
      */
-    public static function newInstance($name, $config = '') {
+    public static function newInstance($name = '', $config = '') {
         $config = is_array($config)?$config:Laywork::serviceConfig($name);
-        $classname = isset($config['classname'])?$config['classname']:'DemoService';
+        $classname = $config && isset($config['classname'])?$config['classname']:'DemoService';
+        Debugger::info("new service($classname) instance", 'Service', __LINE__, __METHOD__, __CLASS__);
         
         if(!isset(self::$instances[$name])) {
             if(isset($config['classname'])) {
@@ -44,6 +45,11 @@ abstract class Service extends Base {
      */
     protected $config;
     /**
+     * 多个Bean对象
+     * @var array<Bean>
+     */
+    protected $beans = array();
+    /**
      * 一个Bean对象
      * @var Bean
      */
@@ -60,8 +66,27 @@ abstract class Service extends Base {
     protected function __construct($config = '') {
         $this->config = $config;
     }
-    
+    /**
+     * 获取以某一个Bean对象
+     * @param string $name
+     * @return Bean
+     */
+    protected function bean($name) {
+        $beans = &$this->beans;
+        if(array_key_exists($name, $beans)) {
+            return $beans[$name];
+        } else if(is_string($name)) {
+            $beans[$name] = Bean::newInstance($name);
+            return $beans[$name];
+        } else {
+            return $beans['demo'];
+        }
+    }
+    /**
+     * 初始化
+     */
     public function initialize() {
+        Debugger::info('initialize', 'Service', __LINE__, __METHOD__, __CLASS__);
         $config = &$this->config;
         
         //加载配置中的bean
