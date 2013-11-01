@@ -101,17 +101,17 @@ final class Laywork {
      */
     public static function autoload($classname) {
         global $_LAYWORKPATH;
-        $_CLASSPATH = $_LAYWORKPATH.'/src';
+        $classpath = $_LAYWORKPATH.'/src';
         $classes = &self::$classes;
-        $suffixes = array('.php', '.class.php', '.inc');
+        $suffixes = array('.php', '.class.php');
 
         if(array_key_exists($classname, $classes)) {//全名映射
             if(is_file($classes[$classname])) {
                 require_once $classes[$classname];
                 Debugger::info($classes[$classname], 'REQUIRE_ONCE', __LINE__, __METHOD__, __CLASS__);
-            } else if(is_file($_CLASSPATH.$classes[$classname])) {
-                require_once $_CLASSPATH.$classes[$classname];
-                Debugger::info($_CLASSPATH.$classes[$classname], 'REQUIRE_ONCE', __LINE__, __METHOD__, __CLASS__);
+            } else if(is_file($classpath.$classes[$classname])) {
+                require_once $classpath.$classes[$classname];
+                Debugger::info($classpath.$classes[$classname], 'REQUIRE_ONCE', __LINE__, __METHOD__, __CLASS__);
             } else {
                 //TODO mapping is error
                 Debugger::warn('Not found class mapping file by name:'.$classname, 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
@@ -120,7 +120,7 @@ final class Laywork {
             $tmparr = explode("\\", $classname);
             if(count($tmparr) > 1) {//if is namespace
                 $name = array_pop($tmparr);
-                $path = $_CLASSPATH.'/'.implode('/', $tmparr);
+                $path = $classpath.'/'.implode('/', $tmparr);
                 $required = false;
                 //命名空间文件夹查找
                 if(is_dir($path)) {
@@ -142,7 +142,7 @@ final class Laywork {
                 }
             } else if(preg_match_all('/([A-Z]{1,}[a-z0-9]{0,}|[a-z0-9]{1,})_{0,1}/', $classname, $matches)) {
                 //TODO autoload class by regular
-                $path = $_CLASSPATH;
+                $path = $classpath;
                 foreach($matches[1] as $index=>$item) {
                     $path .= '/'.$item;
                     if(is_dir($path)) {//顺序文件夹查找
@@ -166,14 +166,14 @@ final class Laywork {
                         break;
                     } else {
                         //TODO not found by regular match
-                        Debugger::warn('Not found by regular match', 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
+                        //Debugger::warn('Not found by regular match', 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
                     }
                 }
             }
         }
         if(!class_exists($classname) && !interface_exists($classname)) {
-            //throw new AutoloadException('class:'.$classname.' autoload error');
-            //TODO warning no class mapping by Laywork class autoload function
+            Debugger::warn($classname.':no class mapping by laywork class autoload function', 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
+            //TODO warning no class mapping by laywork class autoload function
         }
     }
     /**
