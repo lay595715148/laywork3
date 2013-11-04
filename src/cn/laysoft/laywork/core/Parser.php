@@ -39,11 +39,12 @@ class Parser extends Base {
      * @param string $encoding xml encoding
      * @return string 
      */
-    public static function array2XML($value, $root='root', $encoding='utf-8') {
+    public static function array2XML($value, $encoding='utf-8', $root='root', $nkey = '') {
         if( !is_array($value) && !is_string($value) && !is_bool($value) && !is_numeric($value) && !is_object($value) ) {
             return false;
         }
-        return simplexml_load_string('<?xml version="1.0" encoding="'.$encoding.'"?>'.self::x2str($value,$root))->asXml();
+        $nkey = preg_match('/^[A-Za-z_][A-Za-z0-9\-_]{0,}$/', $nkey)?$nkey:'';
+        return simplexml_load_string('<?xml version="1.0" encoding="'.$encoding.'"?>'.self::x2str($value, $root, $nkey))->asXml();
     }
     /**
      * object or array to xml format string
@@ -52,16 +53,17 @@ class Parser extends Base {
      * @param string $key tag name
      * @return string 
      */
-    private static function x2str($xml,$key) {
+    private static function x2str($xml, $key, $nkey) {
         if (!is_array($xml) && !is_object($xml)) {
             return "<$key>".htmlspecialchars($xml)."</$key>";      
         }
-        $xml_str='';
-        foreach ($xml as $k=>$v) {   
+        
+        $xml_str = '';
+        foreach ($xml as $k => $v) {  
             if(is_numeric($k)) {
-                $k = '_'.$k;
+                $k = (($nkey)?$nkey:$key.'-').$k;
             }
-            $xml_str.=self::x2str($v,$k);       
+            $xml_str .= self::x2str($v, $k, $nkey);
         }    
         return "<$key>$xml_str</$key>"; 
     }
