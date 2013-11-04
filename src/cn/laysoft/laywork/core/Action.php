@@ -179,6 +179,8 @@ abstract class Action extends Base {
     public function tail() {//must return $this
         Debugger::info('tail', 'Action', __LINE__, __METHOD__, __CLASS__);
         extract(pathinfo($_SERVER['PHP_SELF']));
+        
+        $extension = isset($extension)?$extension:'';
         switch($extension) {
             case 'json':
                 $this->template->header('Content-Type: application/json');
