@@ -90,7 +90,7 @@ final class Laywork {
     public static function initialize($debug = '') {
         spl_autoload_register('Laywork::autoload');
         if($debug) Debugger::initialize($debug);
-        Debugger::info('initilize application', 'APPLICATION', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('initilize application', 'APPLICATION');
     }
     /**
      * class autoload function
@@ -106,13 +106,13 @@ final class Laywork {
         if(array_key_exists($classname, $classes)) {//全名映射
             if(is_file($classes[$classname])) {
                 require_once $classes[$classname];
-                Debugger::info($classes[$classname], 'REQUIRE_ONCE', __LINE__, __METHOD__, __CLASS__);
+                Debugger::info($classes[$classname], 'REQUIRE_ONCE');
             } else if(is_file($_CLASSPATH.$classes[$classname])) {
                 require_once $_CLASSPATH.$classes[$classname];
-                Debugger::info($_CLASSPATH.$classes[$classname], 'REQUIRE_ONCE', __LINE__, __METHOD__, __CLASS__);
+                Debugger::info($_CLASSPATH.$classes[$classname], 'REQUIRE_ONCE');
             } else {
                 //TODO mapping is error
-                Debugger::warn('Not found class mapping file by name:'.$classname, 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
+                Debugger::warn('Not found class mapping file by name:'.$classname, 'CLASS_AUTOLOAD');
             }
         } else {
             $tmparr = explode("\\", $classname);
@@ -125,18 +125,18 @@ final class Laywork {
                     $tmppath = $path.'/'.$name;
                     foreach($suffixes as $i=>$suffix) {
                         if(is_file($tmppath.$suffix)) {
-                            Debugger::info($tmppath.$suffix, 'REQUIRE_ONCE', __LINE__, __METHOD__, __CLASS__);
+                            Debugger::info($tmppath.$suffix, 'REQUIRE_ONCE');
                             require_once $tmppath.$suffix;
                             $required = true;
                             break;
                         }
                     }
                     if(!class_exists($classname) && !interface_exists($classname)) {
-                        Debugger::warn('Not found by namespace', 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
+                        Debugger::warn('Not found by namespace', 'CLASS_AUTOLOAD');
                     }
                 } else {
                     //TODO not found by namespace dir
-                    Debugger::warn('Not found by namespace dir', 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
+                    Debugger::warn('Not found by namespace dir', 'CLASS_AUTOLOAD');
                 }
             } else if(preg_match_all('/([A-Z]{1,}[a-z0-9]{0,}|[a-z0-9]{1,})_{0,1}/', $classname, $matches)) {
                 //TODO autoload class by regular
@@ -147,7 +147,7 @@ final class Laywork {
                         $tmppath = $path.'/'.substr($classname, strpos($classname, $item) + strlen($item));
                         foreach($suffixes as $i=>$suffix) {
                             if(is_file($tmppath.$suffix)) {
-                                Debugger::info($tmppath.$suffix, 'REQUIRE_ONCE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::info($tmppath.$suffix, 'REQUIRE_ONCE');
                                 require_once $tmppath.$suffix;
                                 break 2;
                             }
@@ -156,7 +156,7 @@ final class Laywork {
                     } else if($index == count($matches[1]) - 1) {
                         foreach($suffixes as $i=>$suffix) {
                             if(is_file($path.$suffix)) {
-                                Debugger::info($path.$suffix, 'REQUIRE_ONCE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::info($path.$suffix, 'REQUIRE_ONCE');
                                 require_once $path.$suffix;
                                 break 2;
                             }
@@ -164,14 +164,14 @@ final class Laywork {
                         break;
                     } else {
                         //TODO not found by regular match
-                        Debugger::warn('Not found by regular match', 'CLASS_AUTOLOAD', __LINE__, __METHOD__, __CLASS__);
+                        Debugger::warn('Not found by regular match', 'CLASS_AUTOLOAD');
                     }
                 }
             }
         }
         if(!class_exists($classname) && !interface_exists($classname)) {
-            //throw new AutoloadException('class:'.$classname.' autoload error');
-            //TODO warning no class mapping by Laywork class autoload function
+            Debugger::warn($classname.':no class mapping by laywork class autoload function', 'CLASS_AUTOLOAD');
+            //TODO warning no class mapping by laywork class autoload function
         }
     }
     /**
@@ -210,7 +210,7 @@ final class Laywork {
             foreach($keys as $index=>$key) {
                 if(isset($node[$key]) && $index === $count - 1) {
                     //TODO warning has been configured by this name
-                    Debugger::warn('$configuration[...]["'.$key.'"] has been configured in "'.$keystr.'"', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                    Debugger::warn('$configuration[...]["'.$key.'"] has been configured in "'.$keystr.'"', 'CONFIGURE');
                     $node[$key] = $value;
                 } else if(isset($node[$key])) {
                     $node = &$node[$key];
@@ -234,9 +234,9 @@ final class Laywork {
         
         if(is_array($actions) && array_key_exists($name, $actions)) {
             //TODO warning has been configured by this name
-            Debugger::warn('$configuration["actions"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::warn('$configuration["actions"]["'.$name.'"] has been configured', 'CONFIGURE');
         } else if(is_string($name) || is_numeric($name)) {
-            Debugger::info('configure action:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure action:'.$name.'', 'CONFIGURE');
             self::set('actions.'.$name, $config);
             //TODO configure an action
         }
@@ -252,9 +252,9 @@ final class Laywork {
         
         if(is_array($services) && array_key_exists($name, $services)) {
             //TODO warning has been configured by this name
-            Debugger::warn('$configuration["services"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::warn('$configuration["services"]["'.$name.'"] has been configured', 'CONFIGURE');
         } else {
-            Debugger::info('configure service:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure service:'.$name.'', 'CONFIGURE');
             self::set('services.'.$name, $config);
             //TODO configure a service
         }
@@ -270,9 +270,9 @@ final class Laywork {
         
         if(is_array($stores) && array_key_exists($name, $stores)) {
             //TODO warning has been configured by this name
-            Debugger::warn('$configuration["stores"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::warn('$configuration["stores"]["'.$name.'"] has been configured', 'CONFIGURE');
         } else {
-            Debugger::info('configure store:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure store:'.$name.'', 'CONFIGURE');
             self::set('stores.'.$name, $config);
             //TODO configure a store
         }
@@ -289,9 +289,9 @@ final class Laywork {
         
         if(is_array($beans) && array_key_exists($name, $beans)) {
             //TODO warning has been configured by this name
-            Debugger::warn('$configuration["beans"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::warn('$configuration["beans"]["'.$name.'"] has been configured', 'CONFIGURE');
         } else {
-            Debugger::info('configure bean:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure bean:'.$name.'', 'CONFIGURE');
             self::set('beans.'.$name, $config);
             //TODO configure a bean
         }
@@ -308,9 +308,9 @@ final class Laywork {
         
         if(is_array($prefaces) && array_key_exists($name, $prefaces)) {
             //TODO warning has preface configured by this name
-            Debugger::warn('$configuration["prefaces"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::warn('$configuration["prefaces"]["'.$name.'"] has been configured', 'CONFIGURE');
         } else {
-            Debugger::info('configure preface:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure preface:'.$name.'', 'CONFIGURE');
             self::set('prefaces.'.$name, $config);
             //TODO configure a preface
         }
@@ -327,9 +327,9 @@ final class Laywork {
         
         if(is_array($templates) && array_key_exists($name, $templates)) {
             //TODO warning has template configured by this name
-            Debugger::warn('$configuration["templates"]["'.$name.'"] has been configured', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::warn('$configuration["templates"]["'.$name.'"] has been configured', 'CONFIGURE');
         } else {
-            Debugger::info('configure template:'.$name.'', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure template:'.$name.'', 'CONFIGURE');
             self::set('templates.'.$name, $config);
             //TODO configure a template
         }
@@ -393,7 +393,7 @@ final class Laywork {
         global $_ROOTPATH;
         $configurations = &self::$configuration;
         if(is_array($configuration) && !$isFile) {
-            //Debugger::info('$configuration:'.json_encode($configuration), 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            //Debugger::info('$configuration:'.json_encode($configuration), 'CONFIGURE');
             foreach($configuration as $key=>$item) {
                 if(is_string($key) && $key) {//key is not null
                     switch($key) {
@@ -404,7 +404,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning actions is not an array
-                                Debugger::warn('$configuration["actions"] is not an array', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::warn('$configuration["actions"] is not an array', 'CONFIGURE');
                             }
                             break;
                         case 'services':
@@ -414,7 +414,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning services is not an array
-                                Debugger::warn('$configuration["services"] is not an array', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::warn('$configuration["services"] is not an array', 'CONFIGURE');
                             }
                             break;
                         case 'stores':
@@ -424,7 +424,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning stores is not an array
-                                Debugger::warn('$configuration["stores"] is not an array', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::warn('$configuration["stores"] is not an array', 'CONFIGURE');
                             }
                             break;
                         case 'beans':
@@ -434,7 +434,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning beans is not an array
-                                Debugger::warn('$configuration["beans"] is not an array', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::warn('$configuration["beans"] is not an array', 'CONFIGURE');
                             }
                             break;
                         case 'prefaces':
@@ -444,7 +444,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning beans is not an array
-                                Debugger::warn('$configuration["prefaces"] is not an array', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::warn('$configuration["prefaces"] is not an array', 'CONFIGURE');
                             }
                             break;
                         case 'templates':
@@ -454,7 +454,7 @@ final class Laywork {
                                 }
                             } else {
                                 //TODO warning beans is not an array
-                                Debugger::warn('$configuration["templates"] is not an array', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::warn('$configuration["templates"] is not an array', 'CONFIGURE');
                             }
                             break;
                         case 'files':
@@ -466,7 +466,7 @@ final class Laywork {
                                 self::configure($item);
                             } else {
                                 //TODO warning files is not an array or string
-                                Debugger::warn('$configuration["files"] is not an array', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                                Debugger::warn('$configuration["files"] is not an array', 'CONFIGURE');
                             }
                             break;
                         case 'debug':
@@ -489,13 +489,13 @@ final class Laywork {
                 }
             }
         } else if(is_string($configuration)) {
-            Debugger::info('configure file:'.$configuration, 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('configure file:'.$configuration, 'CONFIGURE');
             if(is_file($configuration)) {
                 $tmparr = include_once $configuration;
             } else if(is_file($_ROOTPATH.$configuration)) {
                 $tmparr = include_once $_ROOTPATH.$configuration;
             } else {
-                Debugger::warn($configuration.' is not a real file', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+                Debugger::warn($configuration.' is not a real file', 'CONFIGURE');
                 $tmparr = array();
             }
             
@@ -506,7 +506,7 @@ final class Laywork {
             }
         } else {
             //TODO warning unkown configuration type
-            Debugger::warn('unkown configuration type', 'CONFIGURE', __LINE__, __METHOD__, __CLASS__);
+            Debugger::warn('unkown configuration type', 'CONFIGURE');
         }
     }
     /**
@@ -516,13 +516,13 @@ final class Laywork {
      * @param $params param array,default is empty
      */
     public static function start($action = 'index', $method = '', $params = '') {
-        Debugger::info('start application', 'APPLICATION', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('start application', 'APPLICATION');
         try {
             self::getInstance()->run($action, $method, $params);
         } catch (Exception $e) {
-            Debugger::error($e->getMessage()."\r\n".$e->getTraceAsString(), 'Exception', __LINE__, __METHOD__, __CLASS__);
+            Debugger::error($e->getMessage()."\r\n".$e->getTraceAsString(), 'Exception');
         }
-        Debugger::info('finish application', 'APPLICATION', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('finish application', 'APPLICATION');
     }
     
     /**
@@ -565,6 +565,4 @@ final class Laywork {
 if(!class_exists('W', false)) {
     class_alias('Laywork', 'W');//Layload class alias
 }
-
-class AutoloadException extends Exception {}
 ?>

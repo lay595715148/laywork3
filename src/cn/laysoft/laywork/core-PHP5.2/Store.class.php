@@ -24,7 +24,7 @@ abstract class Store extends Base {
     public static function newInstance($name = '', $bean = null, $config = '') {
         $config = is_array($config)?$config:Laywork::storeConfig($name);
         $classname = $config && isset($config['classname'])?$config['classname']:'DemoStore';
-        Debugger::info("new store($classname) instance", 'Store', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info("new store($classname) instance", 'Store');
         
         if(!isset(self::$instances[$name])) {
             if(isset($config['classname'])) {
@@ -61,7 +61,7 @@ abstract class Store extends Base {
      * 初始化
      */
     public function initialize() {
-        Debugger::info('initialize', 'Store', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('initialize', 'Store');
         return $this;
     }
 }

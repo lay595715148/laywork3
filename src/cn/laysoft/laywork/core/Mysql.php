@@ -42,7 +42,7 @@ class Mysql extends Store {
      * 打开mysql数据库连接
      */
     public function connect() {
-        Debugger::info('connect', 'Mysql', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('connect', 'Mysql');
         
         $config = &$this->config;
         $link   = &$this->link;
@@ -79,7 +79,7 @@ class Mysql extends Store {
      * @return mixed
      */
     public function query($sql, $encoding = '', $showSQL = false) {
-        Debugger::info('query', 'Mysql', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('query', 'Mysql');
         $config = &$this->config;
         $result = &$this->result;
         $link   = &$this->link;
@@ -93,11 +93,11 @@ class Mysql extends Store {
         }
         if($showSQL) {
             //echo '<pre>'.$sql.'</pre>';
-            Debugger::info('showsql:'.$sql, 'Mysql', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('showsql:'.$sql, 'Mysql');
         } else if($config['showsql']) {
             $encoding = &$config['showsql'];
             //echo '<pre>'.$sql.'</pre>';
-            Debugger::info('showsql:'.$sql, 'Mysql', __LINE__, __METHOD__, __CLASS__);
+            Debugger::info('showsql:'.$sql, 'Mysql');
         }
         if($sql) {
             $result = mysql_query($sql, $link);
@@ -119,7 +119,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->insertSQL($table, $fields, $values, $replace);
-        Debugger::info('insert', 'Mysql', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('insert', 'Mysql');
         $result = $this->query($sql);
 
         return ($returnid)?mysql_insert_id($link):$result;
@@ -134,7 +134,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->deleteSQL($table, $condition);
-        Debugger::info('delete', 'Mysql', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('delete', 'Mysql');
         $result = $this->query($sql);
 
         return $result;
@@ -151,7 +151,7 @@ class Mysql extends Store {
         $result = &$this->result;
 
         $sql = $this->updateSQL($table, $fields, $values, $condition);
-        Debugger::info('update', 'Mysql', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('update', 'Mysql');
         $result = $this->query($sql);
 
         return $result;
@@ -170,7 +170,7 @@ class Mysql extends Store {
         $result = &$this->result;
         
         $sql = $this->selectSQL($table, $fields, $condition, $group, $order, $limit);
-        Debugger::info('select', 'Mysql', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('select', 'Mysql');
         $result = $this->query($sql);
 
         return $result;
@@ -253,16 +253,16 @@ class Mysql extends Store {
 
         $tablename = $table->table();
         if(is_array($values) && is_array($fields)) {
-            $values = $this->array2Setter($fields,$values,$table);
+            $values = $this->array2Setter($fields, $values, $table);
         } else if(is_array($values)){
-            $values = $this->array2Setter('',$values,$table);
+            $values = $this->array2Setter('', $values, $table);
         } else if(!is_string($values)) {
             return false;
         }
         if(is_array($condition)) {
-            $condition = $this->array2Where($condition,$table);
+            $condition = $this->array2Where($condition, $table);
         } else if(is_a($condition,'Condition')) {
-            $condition = $this->condition2Where($condition,$table);
+            $condition = $this->condition2Where($condition, $table);
         } else if(!is_string($condition)) {
             return false;
         }
@@ -286,7 +286,7 @@ class Mysql extends Store {
 
         $tablename = $table->table();
         if(is_array($fields)) {
-            $fields = $this->array2Field($fields,$table);
+            $fields = $this->array2Field($fields, $table);
         } else if($fields && !is_string($fields)) {
             return false;
         } else if(is_string($fields) && trim($fields)) {
@@ -295,9 +295,9 @@ class Mysql extends Store {
             $fields = '*';
         }
         if(is_array($condition)) {
-            $condition = $this->array2Where($condition,$table);
+            $condition = $this->array2Where($condition, $table);
         } else if(is_a($condition,'Condition')) {
-            $condition = $this->condition2Where($condition,$table);
+            $condition = $this->condition2Where($condition, $table);
         } else if(!is_string($condition)) {
             return false;
         }
@@ -305,9 +305,9 @@ class Mysql extends Store {
             $group = "";
         }
         if(is_a($order,'Arrange')) {
-            $order = $this->arrange2Order($order,$table);
+            $order = $this->arrange2Order($order, $table);
         } else if(is_array($order)) {
-            $order = $this->array2Order($order,$table);
+            $order = $this->array2Order($order, $table);
         } else if(!is_string($order)) {
             $order = "";
         }
@@ -331,9 +331,9 @@ class Mysql extends Store {
 
         $tablename = $table->table();
         if(is_array($condition)) {
-            $condition = $this->array2Where($condition,$table);
+            $condition = $this->array2Where($condition, $table);
         } else if(is_a($condition,'Condition')) {
-            $condition = $this->condition2Where($condition,$table);
+            $condition = $this->condition2Where($condition, $table);
         } else if(!is_string($condition)) {
             return false;
         }
@@ -366,7 +366,7 @@ class Mysql extends Store {
         } else {
             $i = 0;
             if(@mysql_num_rows($result)) {
-                while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+                while($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
                     $rows[$i] = (array)$row;
                     $i++;
                 }

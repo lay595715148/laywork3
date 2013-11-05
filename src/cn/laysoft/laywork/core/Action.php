@@ -33,7 +33,7 @@ abstract class Action extends Base {
     public static function newInstance($name = '', $config = '') {
         $config = is_array($config)?$config:Laywork::actionConfig($name);
         $classname = $config && isset($config['classname'])?$config['classname']:'DemoAction';
-        Debugger::info("new action($classname) instance", 'Action', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info("new action($classname) instance", 'Action');
         
         if(self::$instance == null) {
             if(isset($config['classname'])) {
@@ -80,7 +80,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function initialize() {//must return $this
-        Debugger::info("initialize", 'Action', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info("initialize", 'Action');
         $config      = &$this->config;
         $services    = &$this->services;
         $template    = &$this->template;
@@ -147,7 +147,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function dispatch($method, $params) {//must return $this
-        Debugger::info('dispatch', 'Action', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('dispatch', 'Action');
         $dispatchkey = Laywork::get('dispatch-key') || Action::DISPATCH_KEY;
         $dispatchstyle = Laywork::get('dispatch-style') || Action::DISPATCH_STYLE;
 
@@ -164,7 +164,7 @@ abstract class Action extends Base {
             $method = str_replace('*', $dispatcher, $dispatchstyle);
         }
 
-        if(method_exists($this,$method) && $method != 'init' && $method != 'tail' && $method != 'dispatch' && substr($method,0,2) != '__') {
+        if(method_exists($this, $method) && $method != 'init' && $method != 'tail' && $method != 'dispatch' && substr($method, 0, 2) != '__') {
             $this->$method($params);
         } else {
             $this->launch($params);
@@ -177,7 +177,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function tail() {//must return $this
-        Debugger::info('tail', 'Action', __LINE__, __METHOD__, __CLASS__);
+        Debugger::info('tail', 'Action');
         extract(pathinfo($_SERVER['PHP_SELF']));
         
         $extension = isset($extension)?$extension:'';
