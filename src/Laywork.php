@@ -61,7 +61,7 @@ final class Laywork {
     );
     /**
      * set laywork path
-     * @param $layworkpath laywork directory path,default is empty
+     * @param string $layworkpath laywork directory path,default is empty
      * @return void
      */
     public static function rootpath($rootpath = '') {
@@ -73,30 +73,26 @@ final class Laywork {
         }
     }
     /**
-     * set laywork root path
-     * @param $layworkpath laywork directory path,default is empty
+     * set laywork root path but 
      * @return void
      */
-    public static function layworkpath($layworkpath = '') {
+    public static function layworkpath() {
         global $_LAYWORKPATH;
-        if(is_dir($layworkpath)) {
-            $_LAYWORKPATH = str_replace("\\", "/", $layworkpath);
-        } else {
-            //TODO warning given path isnot a real path
-        }
+        $_LAYWORKPATH = str_replace("\\", "/", dirname(__DIR__));
     }
     /**
      * initialize autoload function
+     * @param
      * @return void
      */
     public static function initialize($debug = '') {
         spl_autoload_register('Laywork::autoload');
-        if($debug) Debugger::initialize($debug);
-        Debugger::info('initilize application', 'APPLICATION');
+        if($debug !== '') Debugger::initialize($debug);
+        Debugger::info('initilize laywork', 'APPLICATION');
     }
     /**
      * class autoload function
-     * @param $classname autoload class name
+     * @param string $classname the autoload class name
      * @return void
      */
     public static function autoload($classname) {
@@ -178,8 +174,8 @@ final class Laywork {
     }
     /**
      * get configuration by key string
-     * @param $keystr key string, example: 'action.index'
-     * @param $default if nothing by $keystr,the default value
+     * @param string $keystr the configuring key string explode by '.', example: 'action.index'
+     * @param mixed $default if get nothing by $keystr,the default value will return
      * @return mixed
      */
     public static function get($keystr = '', $default = null) {
@@ -198,8 +194,8 @@ final class Laywork {
     }
     /**
      * set configuration
-     * @param $name
-     * @param $value
+     * @param string $keystr the configuring key string explode by '.'
+     * @param string|boolean|int|arrray $value the configuring value
      * @return void
      */
     public static function set($keystr, $value){
@@ -227,8 +223,8 @@ final class Laywork {
     }
     /**
      * configure an action
-     * @param $name
-     * @param $config
+     * @param string $name the action configuring name
+     * @param array $config the action configuring content
      * @return void
      */
     public static function action($name, $config) {
@@ -245,8 +241,8 @@ final class Laywork {
     }
     /**
      * configure a service
-     * @param $name
-     * @param $config
+     * @param string $name the service configuring name
+     * @param array $config the service configuring content
      * @return void
      */
     public static function service($name, $config) {
@@ -263,8 +259,8 @@ final class Laywork {
     }
     /**
      * configure a store
-     * @param $name
-     * @param $config
+     * @param string $name the store configuring name
+     * @param array $config the store configuring content
      * @return void
      */
     public static function store($name, $config) {
@@ -281,8 +277,8 @@ final class Laywork {
     }
     /**
      * configure a bean
-     * @param $name
-     * @param $config
+     * @param string $name the bean configuring name
+     * @param array $config the bean configuring content
      * @return void
      */
     public static function bean($name, $config) {
@@ -300,8 +296,8 @@ final class Laywork {
     }
     /**
      * configure a preface
-     * @param $name
-     * @param $config
+     * @param string $name the preface configuring name
+     * @param array $config the preface configuring content
      * @return void
      */
     public static function preface($name, $config) {
@@ -318,9 +314,9 @@ final class Laywork {
         }
     }
     /**
-     * configure a bean
-     * @param $name
-     * @param $config
+     * configure a template
+     * @param string $name the template configuring name
+     * @param array $config the template configuring content
      * @return void
      */
     public static function template($name, $config) {
@@ -328,33 +324,31 @@ final class Laywork {
         $config = is_array($config)?$config:array();
         
         if(is_array($templates) && array_key_exists($name, $templates)) {
-            //TODO warning has template configured by this name
             Debugger::warn('$configuration["templates"]["'.$name.'"] has been configured', 'CONFIGURE');
         } else {
             Debugger::info('configure template:'.$name.'', 'CONFIGURE');
             self::set('templates.'.$name, $config);
-            //TODO configure a template
         }
     }
     /**
-     * get bean configuration by name
-     * @param $name
+     * get action configuration by name
+     * @param string $name the action configured name
      * @return array
      */
     public static function actionConfig($name) {
         return self::get('actions.'.$name);
     }
     /**
-     * get bean configuration by name
-     * @param $name
+     * get service configuration by name
+     * @param string $name the service configured name
      * @return array
      */
     public static function serviceConfig($name) {
         return self::get('services.'.$name);
     }
     /**
-     * get bean configuration by name
-     * @param $name
+     * get store configuration by name
+     * @param string $name the store configured name
      * @return array
      */
     public static function storeConfig($name) {
@@ -362,7 +356,7 @@ final class Laywork {
     }
     /**
      * get bean configuration by name
-     * @param $name
+     * @param string $name the bean configured name
      * @return array
      */
     public static function beanConfig($name) {
@@ -370,7 +364,7 @@ final class Laywork {
     }
     /**
      * get preface configuration by name
-     * @param $name
+     * @param string $name the preface configured name
      * @return array
      */
     public static function prefaceConfig($name) {
@@ -378,7 +372,7 @@ final class Laywork {
     }
     /**
      * get template configuration by name
-     * @param $name
+     * @param string $name the template configured name
      * @return array
      */
     public static function templateConfig($name) {
