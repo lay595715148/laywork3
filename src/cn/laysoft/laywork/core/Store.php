@@ -26,30 +26,30 @@ abstract class Store extends Base {
      * @return Store
      */
     public static function newInstance($name = '', $bean = null, $config = '') {
-    	if(is_array($config) && !empty($config)) {
-        	Debugger::info("new store instance by name:$name and config(json encoded):".json_encode($config), 'Store');
-    	} else {
-        	Debugger::info("new store instance by name:$name", 'Store');
-    	}
+        if(is_array($config) && !empty($config)) {
+            Debugger::info("new store instance by name:$name and config(json encoded):".json_encode($config), 'Store');
+        } else {
+            Debugger::info("new store instance by name:$name", 'Store');
+        }
         
         if(!isset(self::$instances[$name])) {//增加provider功能
-        	$provider = Laywork::get(self::TAG_PROVIDER);
-        	if($provider && is_string($provider)) {
-        		$provider = new $provider();
-        	}
-        	if($provider instanceof IStoreProvider) {
-        		self::$instances[$name] = $provider->provide($name);//执行provide方法
-        	}
-        	//如果没有自定义实现IStoreProvider接口的类对象，使用默认的配置项进行实现
+            $provider = Laywork::get(self::TAG_PROVIDER);
+            if($provider && is_string($provider)) {
+                $provider = new $provider();
+            }
+            if($provider instanceof IStoreProvider) {
+                self::$instances[$name] = $provider->provide($name);//执行provide方法
+            }
+            //如果没有自定义实现IStoreProvider接口的类对象，使用默认的配置项进行实现
             if(!(self::$instances[$name] instanceof Store)) {
-		        $config = is_array($config)?$config:Laywork::storeConfig($name);
-		        $classname = $config && isset($config['classname'])?$config['classname']:'DemoStore';
-	            if(isset($config['classname'])) {
-	                self::$instances[$name] = new $classname($config, $bean);
-	            }
-	            if(!(self::$instances[$name] instanceof Store)) {
-	                self::$instances[$name] = new DemoStore($config, $bean);
-	            }
+                $config = is_array($config)?$config:Laywork::storeConfig($name);
+                $classname = $config && isset($config['classname'])?$config['classname']:'DemoStore';
+                if(isset($config['classname'])) {
+                    self::$instances[$name] = new $classname($config, $bean);
+                }
+                if(!(self::$instances[$name] instanceof Store)) {
+                    self::$instances[$name] = new DemoStore($config, $bean);
+                }
             }
         }
         return self::$instances[$name];

@@ -10,10 +10,10 @@ namespace cn\laysoft\laywork\core;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 interface IProvider {
-	/**
-	 * provide object instance
-	 * @param string|array $name name string or config array
-	 */
-	public function provide($name = '');
+    /**
+     * provide object instance
+     * @param string|array $name name string or config array
+     */
+    public function provide($name = '');
 }
 ?>

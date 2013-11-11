@@ -26,30 +26,30 @@ abstract class Bean extends Base {
      * @return Bean
      */
     public static function newInstance($name = '') {
-    	if(is_array($name)) {
-        	Debugger::info("new bean instance by config(json encoded):".json_encode($name), 'Bean');
-    	} else {
-        	Debugger::info("new bean instance by name:$name", 'Bean');
-    	}
+        if(is_array($name)) {
+            Debugger::info("new bean instance by config(json encoded):".json_encode($name), 'Bean');
+        } else {
+            Debugger::info("new bean instance by name:$name", 'Bean');
+        }
         
         //增加provider功能
         $provider = Laywork::get(self::TAG_PROVIDER);
         if($provider && is_string($provider)) {
-        	$provider = new $provider();
+            $provider = new $provider();
         }
         if($provider instanceof IBeanProvider) {
-        	$instance = $provider->provide($name);//执行provide方法
+            $instance = $provider->provide($name);//执行provide方法
         }
         //如果没有自定义实现IBeanProvider接口的类对象，使用默认的配置项进行实现
         if(!($instance instanceof Bean)) {
-	        $config = Laywork::beanConfig($name);
-	        $classname = $config && isset($config['classname'])?$config['classname']:'DemoBean';
-	        if(isset($config['classname'])) {
-	            $instance = new $classname();
-	        }
-	        if(!($instance instanceof Bean)) {
-	            $instance = new DemoBean();
-	        }
+            $config = Laywork::beanConfig($name);
+            $classname = $config && isset($config['classname'])?$config['classname']:'DemoBean';
+            if(isset($config['classname'])) {
+                $instance = new $classname();
+            }
+            if(!($instance instanceof Bean)) {
+                $instance = new DemoBean();
+            }
         }
         return $instance;
     }

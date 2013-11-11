@@ -26,31 +26,31 @@ abstract class Service extends Base {
      * @return Service
      */
     public static function newInstance($name = '', $config = array()) {
-    	if(is_array($config) && !empty($config)) {
-        	Debugger::info("new service instance by name:$name and config(json encoded):".json_encode($config), 'Service');
-    	} else {
-        	Debugger::info("new service instance by name:$name", 'Service');
-    	}
+        if(is_array($config) && !empty($config)) {
+            Debugger::info("new service instance by name:$name and config(json encoded):".json_encode($config), 'Service');
+        } else {
+            Debugger::info("new service instance by name:$name", 'Service');
+        }
         
         if(!isset(self::$instances[$name])) {//增加provider功能
-        	$provider = Laywork::get(self::TAG_PROVIDER);
-        	if($provider && is_string($provider)) {
-        		$provider = new $provider();
-        	}
-        	if($provider instanceof IServiceProvider) {
-        		self::$instances[$name] = $provider->provide($name);//执行provide方法
-        	}
-        	//如果没有自定义实现IServiceProvider接口的类对象，使用默认的配置项进行实现
-        	if(!(self::$instances[$name] instanceof Service)) {
-		        $config = is_array($config)?$config:Laywork::serviceConfig($name);
-		        $classname = $config && isset($config['classname'])?$config['classname']:'DemoService';
-	            if(isset($config['classname'])) {
-	                self::$instances[$name] = new $classname($config);
-	            }
-	            if(!(self::$instances[$name] instanceof Service)) {
-	                self::$instances[$name] = new DemoService($config);
-	            }
-        	}
+            $provider = Laywork::get(self::TAG_PROVIDER);
+            if($provider && is_string($provider)) {
+                $provider = new $provider();
+            }
+            if($provider instanceof IServiceProvider) {
+                self::$instances[$name] = $provider->provide($name);//执行provide方法
+            }
+            //如果没有自定义实现IServiceProvider接口的类对象，使用默认的配置项进行实现
+            if(!(self::$instances[$name] instanceof Service)) {
+                $config = is_array($config)?$config:Laywork::serviceConfig($name);
+                $classname = $config && isset($config['classname'])?$config['classname']:'DemoService';
+                if(isset($config['classname'])) {
+                    self::$instances[$name] = new $classname($config);
+                }
+                if(!(self::$instances[$name] instanceof Service)) {
+                    self::$instances[$name] = new DemoService($config);
+                }
+            }
         }
         return self::$instances[$name];
     }

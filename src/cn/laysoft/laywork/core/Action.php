@@ -31,31 +31,31 @@ abstract class Action extends Base {
      * @return Action
      */
     public static function newInstance($name = '') {
-    	if(is_array($name)) {
-        	Debugger::info("new action instance by config(json encoded):".json_encode($name), 'Action');
-    	} else {
-        	Debugger::info("new action instance by name:$name", 'Action');
-    	}
+        if(is_array($name)) {
+            Debugger::info("new action instance by config(json encoded):".json_encode($name), 'Action');
+        } else {
+            Debugger::info("new action instance by name:$name", 'Action');
+        }
         
         if(self::$instance == null) {//增加provider功能
-        	$provider = Laywork::get(self::TAG_PROVIDER);
-        	if($provider && is_string($provider)) {
-        		$provider = new $provider();
-        	}
-        	if($provider instanceof IActionProvider) {
-        		self::$instance = $provider->provide($name);//执行provide方法
-        	}
-        	//如果没有自定义实现IActionProvider接口的类对象，使用默认的配置项进行实现
-        	if(!(self::$instance instanceof Action)) {
-		        $config = is_array($name)?$name:Laywork::actionConfig($name);
-		        $classname = $config && isset($config['classname'])?$config['classname']:'DemoAction';
-	            if(isset($config['classname'])) {
-	                self::$instance = new $classname($config);
-	            }
-	            if(!(self::$instance instanceof Action)) {
-	                self::$instance = new DemoAction($config);
-	            }
-        	}
+            $provider = Laywork::get(self::TAG_PROVIDER);
+            if($provider && is_string($provider)) {
+                $provider = new $provider();
+            }
+            if($provider instanceof IActionProvider) {
+                self::$instance = $provider->provide($name);//执行provide方法
+            }
+            //如果没有自定义实现IActionProvider接口的类对象，使用默认的配置项进行实现
+            if(!(self::$instance instanceof Action)) {
+                $config = is_array($name)?$name:Laywork::actionConfig($name);
+                $classname = $config && isset($config['classname'])?$config['classname']:'DemoAction';
+                if(isset($config['classname'])) {
+                    self::$instance = new $classname($config);
+                }
+                if(!(self::$instance instanceof Action)) {
+                    self::$instance = new DemoAction($config);
+                }
+            }
         }
         return self::$instance;
     }
