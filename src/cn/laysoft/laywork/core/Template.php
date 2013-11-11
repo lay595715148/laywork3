@@ -14,6 +14,7 @@ if(!defined('INIT_LAYWORK')) { exit; }
  * @abstract
  */
 abstract class Template extends Base {
+    const TAG_PROVIDER = 'template-provider';
     /**
      * @staticvar Template instance
      */
@@ -24,19 +25,31 @@ abstract class Template extends Base {
      * @param $config default is empty
      * @return Template
      */
-    public static function newInstance($name = '', $config = '') {
-        $config = is_array($config)?$config:Laywork::templateConfig($name);
-        $classname = isset($config['classname'])?$config['classname']:'DemoTemplate';
-        Debugger::info("new template($classname) instance", 'Template');
+    public static function newInstance($name = '') {
+    	if(is_array($name)) {
+        	Debugger::info("new template instance by config(json encoded):".json_encode($name), 'Template');
+    	} else {
+        	Debugger::info("new template instance by name:$name", 'Template');
+    	}
         
-        if(self::$instance == null) {
-            if(isset($config['classname'])) {
-                self::$instance = new $classname($config);
-            } else {
-                self::$instance = new DemoTemplate($config);
-            }
+        if(self::$instance == null) {//增加provider功能
+        	$provider = Laywork::get(self::TAG_PROVIDER);
+        	if($provider && is_string($provider)) {
+        		$provider = new $provider();
+        	}
+        	if($provider instanceof ITemplateProvider) {
+        		self::$instance = $provider->provide($name);//执行provide方法
+        	}
+        	//如果没有自定义实现ITemplateProvider接口的类对象，使用默认的配置项进行实现
             if(!(self::$instance instanceof Template)) {
-                self::$instance = new DemoTemplate($config);
+		        $config = is_array($name)?$name:Laywork::templateConfig($name);
+		        $classname = isset($config['classname'])?$config['classname']:'DemoTemplate';
+	            if(isset($config['classname'])) {
+	                self::$instance = new $classname($config);
+	            }
+	            if(!(self::$instance instanceof Template)) {
+	                self::$instance = new DemoTemplate($config);
+	            }
             }
         }
         return self::$instance;

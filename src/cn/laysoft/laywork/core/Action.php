@@ -20,30 +20,42 @@ if(!defined('INIT_LAYWORK')) { exit; }
 abstract class Action extends Base {
     const DISPATCH_KEY = 'a';
     const DISPATCH_STYLE = '*';
+    const TAG_PROVIDER = 'action-provider';
     /**
      * @staticvar action instance
      */
     private static $instance = null;
     /**
      * get action instance 
-     * @param $name name of action
-     * @param $config default is empty
+     * @param string|array $name name or config of Action
      * @return Action
      */
-    public static function newInstance($name = '', $config = '') {
-        $config = is_array($config)?$config:Laywork::actionConfig($name);
-        $classname = $config && isset($config['classname'])?$config['classname']:'DemoAction';
-        Debugger::info("new action($classname) instance", 'Action');
+    public static function newInstance($name = '') {
+    	if(is_array($name)) {
+        	Debugger::info("new action instance by config(json encoded):".json_encode($name), 'Action');
+    	} else {
+        	Debugger::info("new action instance by name:$name", 'Action');
+    	}
         
-        if(self::$instance == null) {
-            if(isset($config['classname'])) {
-                self::$instance = new $classname($config);
-            } else {
-                self::$instance = new DemoAction($config);
-            }
-            if(!(self::$instance instanceof Action)) {
-                self::$instance = new DemoAction($config);
-            }
+        if(self::$instance == null) {//增加provider功能
+        	$provider = Laywork::get(self::TAG_PROVIDER);
+        	if($provider && is_string($provider)) {
+        		$provider = new $provider();
+        	}
+        	if($provider instanceof IActionProvider) {
+        		self::$instance = $provider->provide($name);//执行provide方法
+        	}
+        	//如果没有自定义实现IActionProvider接口的类对象，使用默认的配置项进行实现
+        	if(!(self::$instance instanceof Action)) {
+		        $config = is_array($name)?$name:Laywork::actionConfig($name);
+		        $classname = $config && isset($config['classname'])?$config['classname']:'DemoAction';
+	            if(isset($config['classname'])) {
+	                self::$instance = new $classname($config);
+	            }
+	            if(!(self::$instance instanceof Action)) {
+	                self::$instance = new DemoAction($config);
+	            }
+        	}
         }
         return self::$instance;
     }
@@ -53,11 +65,11 @@ abstract class Action extends Base {
      */
     protected $config = array();
     /**
-     * @var array 存放配置的AbstractService对象
+     * @var array 存放配置的Service对象
      */
     protected $services = array();
     /**
-     * @var array 存放自注入的AbstractBean对象
+     * @var array 存放自注入的Bean对象
      */
     //protected $beans = array();
     /**

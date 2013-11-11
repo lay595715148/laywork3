@@ -380,8 +380,8 @@ final class Laywork {
     /**
      * laywork autorun configuration,all config file is load in $_ROOTPATH
      * include actions,services,stores,beans,files...other
-     * @param $configuration a file or file array or config array
-     * @param $isFile sign file,default is true
+     * @param string|array $configuration a file or file array or config array
+     * @param boolean $isFile sign file,default is true
      * @return void
      */
     public static function configure($configuration, $isFile = true) {

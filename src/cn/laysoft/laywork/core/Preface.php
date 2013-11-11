@@ -10,29 +10,42 @@ use Laywork,Debugger;
 if(!defined('INIT_LAYWORK')) { exit; }
 
 abstract class Preface extends Base {
+    const TAG_PROVIDER = 'preface-provider';
     /**
      * @staticvar Preface instance
      */
     private static $instance = null;
     /**
      * get Preface instance 
-     * @param $name name of Preface
+     * @param string|array $name name or config of Preface
      * @param $config default is empty
      * @return Preface
      */
-    public static function newInstance($name = '', $config = '') {
-        $config = is_array($config)?$config:Laywork::prefaceConfig($name);
-        $classname = isset($config['classname'])?$config['classname']:'DemoPreface';
-        Debugger::info("new preface($classname) instance", 'Preface');
+    public static function newInstance($name = '') {
+    	if(is_array($name)) {
+        	Debugger::info("new preface instance by config(json encoded):".json_encode($name), 'Preface');
+    	} else {
+        	Debugger::info("new preface instance by name:$name", 'Preface');
+    	}
         
-        if(self::$instance == null) {
-            if(isset($config['classname'])) {
-                self::$instance = new $classname($config);
-            } else {
-                self::$instance = new DemoPreface($config);
-            }
+        if(self::$instance == null) {//增加provider功能
+        	$provider = Laywork::get(self::TAG_PROVIDER);
+        	if($provider && is_string($provider)) {
+        		$provider = new $provider();
+        	}
+        	if($provider instanceof IPrefaceProvider) {
+        		self::$instance = $provider->provide($name);//执行provide方法
+        	}
+        	//如果没有自定义实现IPrefaceProvider接口的类对象，使用默认的配置项进行实现
             if(!(self::$instance instanceof Preface)) {
-                self::$instance = new DemoPreface($config);
+		        $config = is_array($config)?$config:Laywork::prefaceConfig($name);
+		        $classname = isset($config['classname'])?$config['classname']:'DemoPreface';
+	            if(isset($config['classname'])) {
+	                self::$instance = new $classname($config);
+	            }
+	            if(!(self::$instance instanceof Preface)) {
+	                self::$instance = new DemoPreface($config);
+	            }
             }
         }
         return self::$instance;
