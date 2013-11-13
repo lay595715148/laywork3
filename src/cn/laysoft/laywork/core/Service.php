@@ -41,13 +41,13 @@ abstract class Service extends Base {
                 self::$instances[$name] = $provider->provide($name);//执行provide方法
             }
             //如果没有自定义实现IServiceProvider接口的类对象，使用默认的配置项进行实现
-            if(!(self::$instances[$name] instanceof Service)) {
+            if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Service)) {
                 $config = is_array($config)?$config:Laywork::serviceConfig($name);
                 $classname = $config && isset($config['classname'])?$config['classname']:'DemoService';
                 if(isset($config['classname'])) {
                     self::$instances[$name] = new $classname($config);
                 }
-                if(!(self::$instances[$name] instanceof Service)) {
+                if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Service)) {
                     self::$instances[$name] = new DemoService($config);
                 }
             }

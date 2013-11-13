@@ -38,7 +38,7 @@ abstract class Preface extends Base {
             }
             //如果没有自定义实现IPrefaceProvider接口的类对象，使用默认的配置项进行实现
             if(!(self::$instance instanceof Preface)) {
-                $config = is_array($config)?$config:Laywork::prefaceConfig($name);
+                $config = is_array($name)?$name:Laywork::prefaceConfig($name);
                 $classname = isset($config['classname'])?$config['classname']:'DemoPreface';
                 if(isset($config['classname'])) {
                     self::$instance = new $classname($config);

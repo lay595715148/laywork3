@@ -32,6 +32,7 @@ abstract class Bean extends Base {
             Debugger::info("new bean instance by name:$name", 'Bean');
         }
         
+        $instance = null;
         //增加provider功能
         $provider = Laywork::get(self::TAG_PROVIDER);
         if($provider && is_string($provider)) {

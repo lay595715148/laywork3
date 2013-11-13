@@ -86,7 +86,14 @@ final class Laywork {
      * @return void
      */
     public static function initialize($debug = '') {
-        spl_autoload_register('Laywork::autoload');
+        //使用自定义的autoload方法
+        //spl_autoload_register('Laywork::autoload');
+        
+        //使用layload的autoload方法
+        global $_LAYWORKPATH;
+        Layload::configure(self::$classes);
+        Layload::classpath($_LAYWORKPATH.'/src');
+        
         if($debug !== '') Debugger::initialize($debug);
         Debugger::info('initilize laywork', 'APPLICATION');
     }

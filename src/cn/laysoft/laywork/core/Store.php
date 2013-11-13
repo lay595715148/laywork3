@@ -41,13 +41,13 @@ abstract class Store extends Base {
                 self::$instances[$name] = $provider->provide($name);//执行provide方法
             }
             //如果没有自定义实现IStoreProvider接口的类对象，使用默认的配置项进行实现
-            if(!(self::$instances[$name] instanceof Store)) {
+            if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Store)) {
                 $config = is_array($config)?$config:Laywork::storeConfig($name);
                 $classname = $config && isset($config['classname'])?$config['classname']:'DemoStore';
                 if(isset($config['classname'])) {
                     self::$instances[$name] = new $classname($config, $bean);
                 }
-                if(!(self::$instances[$name] instanceof Store)) {
+                if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Store)) {
                     self::$instances[$name] = new DemoStore($config, $bean);
                 }
             }
