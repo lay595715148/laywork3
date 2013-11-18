@@ -196,7 +196,6 @@ abstract class Action extends Base {
             $dispatcher = $ext['filename'];
         }
         if($dispatcher) {
-            str_replace($search, $replace, $subject);
             $method = str_replace('*', $dispatcher, $dispatchstyle);
         }
         
