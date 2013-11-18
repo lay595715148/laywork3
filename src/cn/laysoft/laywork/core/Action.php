@@ -22,6 +22,7 @@ if(! defined('INIT_LAYWORK')) {
  *
  * @abstract
  *
+ *
  */
 abstract class Action extends Base {
     const DISPATCH_KEY = 'a';
@@ -34,7 +35,7 @@ abstract class Action extends Base {
     private static $instance = null;
     /**
      * get action instance
-     * 
+     *
      * @param string|array $name
      *            name or config of Action
      * @return Action
@@ -96,7 +97,7 @@ abstract class Action extends Base {
     protected $preface;
     /**
      * 构造方法
-     * 
+     *
      * @param array $config            
      */
     public function __construct($config = '') {
@@ -104,7 +105,7 @@ abstract class Action extends Base {
     }
     /**
      * 初始化
-     * 
+     *
      * @return Action
      */
     public function initialize() { // must return $this
@@ -149,7 +150,7 @@ abstract class Action extends Base {
     }
     /**
      * 获取某一个Service对象
-     * 
+     *
      * @param string $name            
      * @return Service
      */
@@ -172,10 +173,12 @@ abstract class Action extends Base {
     }
     /**
      * 路由执行方法
-     * 
-     * @param Exception $e
-     *            异常对象,默认为空
-     * @return Action
+     *
+     * @param string $method
+     *            dispatch method,default is empty
+     * @param array $params
+     *            dispatch method arguments
+     * @return Action $this
      */
     public function dispatch($method, $params) { // must return $this
         Debugger::info('dispatch', 'Action');
@@ -192,6 +195,7 @@ abstract class Action extends Base {
             $dispatcher = $ext['filename'];
         }
         if($dispatcher) {
+            str_replace($search, $replace, $subject);
             $method = str_replace('*', $dispatcher, $dispatchstyle);
         }
         
@@ -205,7 +209,7 @@ abstract class Action extends Base {
     }
     /**
      * 最后执行方法
-     * 
+     *
      * @return Action
      */
     public function tail() { // must return $this
