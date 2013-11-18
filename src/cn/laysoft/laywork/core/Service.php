@@ -48,6 +48,7 @@ abstract class Service extends Base {
                     self::$instances[$name] = new $classname($config);
                 }
                 if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Service)) {
+                    Debugger::warn('service has been instantiated by default DemoService', 'SERVICE');
                     self::$instances[$name] = new DemoService($config);
                 }
             }

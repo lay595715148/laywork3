@@ -87,7 +87,7 @@ abstract class Action extends Base {
     // protected $beans = array();
     /**
      *
-     * @var AbstractTemplate 模板引擎对象
+     * @var Template 模板引擎对象
      */
     protected $template;
     /**
@@ -163,6 +163,7 @@ abstract class Action extends Base {
             $services[$name]->initialize();
             return $services[$name];
         } else {
+            Debugger::warn('service name is empty or hasnot been autoinstantiated by service name:'.$name, 'SERVICE');
             return $services['demo'];
         }
     }
