@@ -72,7 +72,7 @@ abstract class Bean extends Base {
      * 构造方法
      * @param array $properties
      */
-    protected function __construct($properties = array(), $propertypes = array()) {
+    public function __construct($properties = array(), $propertypes = array()) {
         if(is_array($properties)) {
             $this->properties = $properties;
         }

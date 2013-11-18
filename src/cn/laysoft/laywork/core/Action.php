@@ -99,7 +99,7 @@ abstract class Action extends Base {
      * 
      * @param array $config            
      */
-    protected function __construct($config = '') {
+    public function __construct($config = '') {
         $this->config = $config;
     }
     /**
@@ -157,7 +157,7 @@ abstract class Action extends Base {
         $services = &$this->services;
         if(array_key_exists($name, $services)) {
             return $services[$name];
-        } else if(is_string($name)) {
+        } else if(is_string($name) && $name) {
             $services[$name] = Service::newInstance($name);
             $services[$name]->initialize();
             return $services[$name];

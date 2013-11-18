@@ -43,12 +43,12 @@ abstract class Store extends Base {
             //如果没有自定义实现IStoreProvider接口的类对象，使用默认的配置项进行实现
             if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Store)) {
                 $config = is_array($config)?$config:Laywork::storeConfig($name);
-                $classname = $config && isset($config['classname'])?$config['classname']:'DemoStore';
+                $classname = $config && isset($config['classname'])?$config['classname']:'Mysql';
                 if(isset($config['classname'])) {
                     self::$instances[$name] = new $classname($config, $bean);
                 }
                 if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Store)) {
-                    self::$instances[$name] = new DemoStore($config, $bean);
+                    self::$instances[$name] = new Mysql($config, $bean);
                 }
             }
         }
@@ -69,7 +69,7 @@ abstract class Store extends Base {
      * @param array $config 配置信息数组
      * @param Bean $config 配置信息数组
      */
-    protected function __construct($config = '', $bean = null) {
+    public function __construct($config = '', $bean = null) {
         $this->config = $config;
         $this->bean = $bean;
     }

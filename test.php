@@ -4,6 +4,8 @@ include_once('./bootstrap.origin.php');
 use cn\laysoft\laywork\core\Criteria;
 use cn\laysoft\laywork\core\Criterion;
 use cn\laysoft\laywork\core\Action;
+use cn\laysoft\laywork\core\Store;
+use cn\laysoft\laywork\core\Mysql;
 
 Laywork::initialize(true);
 Layload::initialize(true);
@@ -55,7 +57,14 @@ class TestAction extends Action {
         //echo "<pre>Criteria::parse('{$item}')\n";print_r($ret);echo '</pre>';
         Debugger::debug("Criteria::parse('{$item}')\n");
         Debugger::debug($ret);
-        Debugger::debug(Laywork::get());
+        $service = $this->service('out');
+        Debugger::debug(Store::newInstance('mysql'));
+        $userid = 'ssoAdmin';
+        $sql = "SELECT `uid`, `mailid` FROM `laysoft`.`uid_mailid` WHERE `uid` = '".mysql_escape_string($userid)."'";
+        Store::newInstance('mysql')->query($sql);
+        $row = Store::newInstance('mysql')->toArray(1);
+        Debugger::debug($row);
+        //Debugger::debug(Laywork::get());
         new MyClass();
     }
 }

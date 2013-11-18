@@ -64,22 +64,22 @@ abstract class Service extends Base {
      * 多个Bean对象
      * @var array<Bean>
      */
-    protected $beans = array();
+    public $beans = array();
     /**
      * 一个Bean对象
      * @var Bean
      */
-    protected $bean;
+    public $bean;
     /**
      * 一个Store对象
      * @var Store
      */
-    protected $store;
+    public $store;
     /**
      * 构造方法
      * @param array $config
      */
-    protected function __construct($config = '') {
+    public function __construct($config = '') {
         $this->config = $config;
     }
     /**

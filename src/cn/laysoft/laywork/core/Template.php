@@ -103,7 +103,7 @@ abstract class Template extends Base {
      * 构造方法
      * @param array $config 配置信息数组
      */
-    protected function __construct($config = '') {
+    public function __construct($config = '') {
         $this->config = $config;
     }
     /**
@@ -163,7 +163,7 @@ abstract class Template extends Base {
      * set include theme template file path
      * @param string $filepath template file path, relative template theme directory
      */
-    public function template($filepath) {
+    public function plate($filepath) {
         global $_ROOTPATH;
         $filepath = str_replace("\\", "/", $filepath);
         if(strpos($filepath, $_ROOTPATH) === 0) {
@@ -236,7 +236,18 @@ abstract class Template extends Base {
         }
     }
     /**
-     * output as json
+     * get template variables,
+     * return the point of template variables
+     * @return array
+     */
+    public function vars() {
+        Debugger::info('variable', 'Template');
+        $templateVars = &$this->vars;
+
+        return $templateVars;
+    }
+    /**
+     * output as json string
      */
     public function json() {
         Debugger::info('json', 'Template');
@@ -249,7 +260,7 @@ abstract class Template extends Base {
         echo json_encode($templateVars);
     }
     /**
-     * output as xml
+     * output as xml string
      */
     public function xml() {
         Debugger::info('xml', 'Template');
@@ -263,9 +274,17 @@ abstract class Template extends Base {
     }
     /**
      * output as template
+     * @return void
      */
     public function out() {
-        Debugger::info('out', 'Template');
+        $this->display();
+    }
+    /**
+     * output as template
+     * @return void
+     */
+    public function display() {
+        Debugger::info('display', 'Template');
         $templateVars = &$this->vars;
         $templateFile = &$this->file;
         $metas        = &$this->metas;

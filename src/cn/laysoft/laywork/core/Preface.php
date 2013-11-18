@@ -60,7 +60,7 @@ abstract class Preface extends Base {
      * 构造方法
      * @param array $config 配置信息数组
      */
-    protected function __construct($config = '') {
+    public function __construct($config = '') {
         $this->config = $config;
     }
     /**

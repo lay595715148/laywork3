@@ -15,6 +15,5 @@ interface IActionProvider extends IProvider {
 	 * @see \cn\laysoft\laywork\core\IProvider::provide()
 	 * @return Action
 	 */
-	public function provide($name = '');
 }
 ?>
