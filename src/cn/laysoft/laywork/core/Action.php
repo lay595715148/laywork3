@@ -42,9 +42,9 @@ abstract class Action extends Base {
      */
     public static function newInstance($name = '') {
         if(is_array($name)) {
-            Debugger::info("new action instance by config(json encoded):" . json_encode($name), 'Action');
+            Debugger::info("new action instance by config(json encoded):" . json_encode($name), 'ACTION');
         } else {
-            Debugger::info("new action instance by name:$name", 'Action');
+            Debugger::info("new action instance by name:$name", 'ACTION');
         }
         
         if(self::$instance == null) { // 增加provider功能
@@ -63,6 +63,7 @@ abstract class Action extends Base {
                     self::$instance = new $classname($config);
                 }
                 if(! (self::$instance instanceof Action)) {
+                    Debugger::warn('action has been instantiated by default DemoAction', 'ACTION');
                     self::$instance = new DemoAction($config);
                 }
             }
@@ -109,7 +110,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function initialize() { // must return $this
-        Debugger::info("initialize", 'Action');
+        Debugger::info("initialize", 'ACTION');
         $config = &$this->config;
         $services = &$this->services;
         $template = &$this->template;
@@ -182,7 +183,7 @@ abstract class Action extends Base {
      * @return Action $this
      */
     public function dispatch($method, $params) { // must return $this
-        Debugger::info('dispatch', 'Action');
+        Debugger::info('dispatch', 'ACTION');
         $dispatchkey = Laywork::get('dispatch-key') || Action::DISPATCH_KEY;
         $dispatchstyle = Laywork::get('dispatch-style') || Action::DISPATCH_STYLE;
         
@@ -213,7 +214,7 @@ abstract class Action extends Base {
      * @return Action
      */
     public function tail() { // must return $this
-        Debugger::info('tail', 'Action');
+        Debugger::info('tail', 'ACTION');
         extract(pathinfo($_SERVER['PHP_SELF']));
         
         $extension = isset($extension) ? $extension : '';

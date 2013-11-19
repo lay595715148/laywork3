@@ -23,9 +23,9 @@ abstract class Preface extends Base {
      */
     public static function newInstance($name = '') {
         if(is_array($name)) {
-            Debugger::info("new preface instance by config(json encoded):".json_encode($name), 'Preface');
+            Debugger::info("new preface instance by config(json encoded):".json_encode($name), 'PREFACE');
         } else {
-            Debugger::info("new preface instance by name:$name", 'Preface');
+            Debugger::info("new preface instance by name:$name", 'PREFACE');
         }
         
         if(self::$instance == null) {//增加provider功能
@@ -44,6 +44,7 @@ abstract class Preface extends Base {
                     self::$instance = new $classname($config);
                 }
                 if(!(self::$instance instanceof Preface)) {
+                    Debugger::warn('preface has been instantiated by default DemoPreface', 'PREFACE');
                     self::$instance = new DemoPreface($config);
                 }
             }
@@ -67,7 +68,7 @@ abstract class Preface extends Base {
      * 初始化
      */
     public function initialize() {//must return $this
-        Debugger::info('initialize', 'Preface');
+        Debugger::info('initialize', 'PREFACE');
         return $this;
     }
 }

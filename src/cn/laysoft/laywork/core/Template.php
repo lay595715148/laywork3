@@ -27,9 +27,9 @@ abstract class Template extends Base {
      */
     public static function newInstance($name = '') {
         if(is_array($name)) {
-            Debugger::info("new template instance by config(json encoded):".json_encode($name), 'Template');
+            Debugger::info("new template instance by config(json encoded):".json_encode($name), 'TEMPLATE');
         } else {
-            Debugger::info("new template instance by name:$name", 'Template');
+            Debugger::info("new template instance by name:$name", 'TEMPLATE');
         }
         
         if(self::$instance == null) {//增加provider功能
@@ -48,6 +48,7 @@ abstract class Template extends Base {
                     self::$instance = new $classname($config);
                 }
                 if(!(self::$instance instanceof Template)) {
+                    Debugger::warn('template has been instantiated by default DemoTemplate', 'TEMPLATE');
                     self::$instance = new DemoTemplate($config);
                 }
             }
@@ -110,7 +111,7 @@ abstract class Template extends Base {
      * 初始化
      */
     public function initialize() {//must return $this
-        Debugger::info('initialize', 'Template');
+        Debugger::info('initialize', 'TEMPLATE');
         return $this;
     }
     /**
@@ -241,7 +242,7 @@ abstract class Template extends Base {
      * @return array
      */
     public function vars() {
-        Debugger::info('variable', 'Template');
+        Debugger::info('variable', 'TEMPLATE');
         $templateVars = &$this->vars;
 
         return $templateVars;
@@ -250,7 +251,7 @@ abstract class Template extends Base {
      * output as json string
      */
     public function json() {
-        Debugger::info('json', 'Template');
+        Debugger::info('json', 'TEMPLATE');
         $headers      = &$this->headers;
         $templateVars = &$this->vars;
         $templateVars = array_diff_key($templateVars,array('title'=>1));
@@ -263,7 +264,7 @@ abstract class Template extends Base {
      * output as xml string
      */
     public function xml() {
-        Debugger::info('xml', 'Template');
+        Debugger::info('xml', 'TEMPLATE');
         $headers      = &$this->headers;
         $templateVars = &$this->vars;
         $templateVars = array_diff_key($templateVars,array('title'=>1));
@@ -284,7 +285,7 @@ abstract class Template extends Base {
      * @return void
      */
     public function display() {
-        Debugger::info('display', 'Template');
+        Debugger::info('display', 'TEMPLATE');
         $templateVars = &$this->vars;
         $templateFile = &$this->file;
         $metas        = &$this->metas;

@@ -27,9 +27,9 @@ abstract class Store extends Base {
      */
     public static function newInstance($name = '', $bean = null, $config = '') {
         if(is_array($config) && !empty($config)) {
-            Debugger::info("new store instance by name:$name and config(json encoded):".json_encode($config), 'Store');
+            Debugger::info("new store instance by name:$name and config(json encoded):".json_encode($config), 'STORE');
         } else {
-            Debugger::info("new store instance by name:$name", 'Store');
+            Debugger::info("new store instance by name:$name", 'STORE');
         }
         
         if(!isset(self::$instances[$name])) {//增加provider功能
@@ -48,6 +48,7 @@ abstract class Store extends Base {
                     self::$instances[$name] = new $classname($config, $bean);
                 }
                 if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Store)) {
+                    Debugger::warn('store has been instantiated by default Mysql', 'STORE');
                     self::$instances[$name] = new Mysql($config, $bean);
                 }
             }
@@ -77,7 +78,7 @@ abstract class Store extends Base {
      * 初始化
      */
     public function initialize() {
-        Debugger::info('initialize', 'Store');
+        Debugger::info('initialize', 'STORE');
         return $this;
     }
 }
