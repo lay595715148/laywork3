@@ -62,11 +62,6 @@ abstract class Service extends Base {
      */
     protected $config;
     /**
-     * 多个Bean对象
-     * @var array<Bean>
-     */
-    public $beans = array();
-    /**
      * 一个Bean对象
      * @var Bean
      */
@@ -82,22 +77,6 @@ abstract class Service extends Base {
      */
     public function __construct($config = '') {
         $this->config = $config;
-    }
-    /**
-     * 获取以某一个Bean对象
-     * @param string $name
-     * @return Bean
-     */
-    protected function bean($name) {
-        $beans = &$this->beans;
-        if(array_key_exists($name, $beans)) {
-            return $beans[$name];
-        } else if(is_string($name)) {
-            $beans[$name] = Bean::newInstance($name);
-            return $beans[$name];
-        } else {
-            return $beans['demo'];
-        }
     }
     /**
      * 初始化
