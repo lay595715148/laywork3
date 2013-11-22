@@ -12,16 +12,15 @@ ini_set('implicit_flush', 'off');
 ob_implicit_flush(false);
 
 require_once __DIR__.'/lib/PHP-Error/src/php_error.php';\php_error\reportErrors();
-require_once __DIR__.'/lib/laybug/laybug.php';
+require_once __DIR__.'/lib/index.php';
 require_once __DIR__.'/src/Laywork.php';
-//Layload see https://github.com/lay595715148/layload
-require_once __DIR__.'/lib/layload/layload.php';
 
-Laywork::configure(__DIR__.'/example/include/config.files.php');//-PHP5.2
-Laywork::initialize();
 Layload::loadpath(__DIR__.'/example');
 Layload::classpath(__DIR__.'/example/classes');
+Laywork::configure(__DIR__.'/example/include/config.files.php');
+
 Layload::initialize();
+Laywork::initialize();
 
 //Laywork::start();
 ?>

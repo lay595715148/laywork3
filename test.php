@@ -7,8 +7,8 @@ use cn\laysoft\laywork\core\Action;
 use cn\laysoft\laywork\core\Store;
 use cn\laysoft\laywork\core\Mysql;
 
-Laywork::initialize(true);
-Layload::initialize(true);
+//Laywork::initialize(true);
+//Layload::initialize(true);
 
 Laywork::configure(array('actions.index.classname'=>'TestAction'), false);
 
