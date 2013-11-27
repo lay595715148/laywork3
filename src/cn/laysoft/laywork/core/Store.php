@@ -39,6 +39,8 @@ abstract class Store extends Base {
             }
             if($provider instanceof IStoreProvider) {
                 self::$instances[$name] = $provider->provide($name);//执行provide方法
+            } else if($provider) {
+                Debugger::warn('given provider isnot an instance of IStoreProvider', 'STORE');
             }
             //如果没有自定义实现IStoreProvider接口的类对象，使用默认的配置项进行实现
             if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Store)) {

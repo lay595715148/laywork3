@@ -15,6 +15,5 @@ interface ITemplateProvider extends IProvider {
 	 * @see \cn\laysoft\laywork\core\IProvider::provide()
 	 * @return Template
 	 */
-	public function provide($name = '');
 }
 ?>

@@ -15,6 +15,5 @@ interface IPrefaceProvider extends IProvider {
 	 * @see \cn\laysoft\laywork\core\IProvider::provide()
 	 * @return Preface
 	 */
-	public function provide($name = '');
 }
 ?>

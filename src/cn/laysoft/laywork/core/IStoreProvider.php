@@ -15,6 +15,5 @@ interface IStoreProvider extends IProvider {
 	 * @see \cn\laysoft\laywork\core\IProvider::provide()
 	 * @return Store
 	 */
-	public function provide($name = '');
 }
 ?>

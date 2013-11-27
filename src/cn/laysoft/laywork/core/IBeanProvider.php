@@ -15,6 +15,5 @@ interface IBeanProvider extends IProvider {
 	 * @see \cn\laysoft\laywork\core\IProvider::provide()
 	 * @return Bean
 	 */
-	public function provide($name = '');
 }
 ?>

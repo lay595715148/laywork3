@@ -39,6 +39,8 @@ abstract class Template extends Base {
             }
             if($provider instanceof ITemplateProvider) {
                 self::$instance = $provider->provide($name);//执行provide方法
+            } else if($provider) {
+                Debugger::warn('given provider isnot an instance of ITemplateProvider', 'TEMPLATE');
             }
             //如果没有自定义实现ITemplateProvider接口的类对象，使用默认的配置项进行实现
             if(!(self::$instance instanceof Template)) {

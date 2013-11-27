@@ -25,7 +25,7 @@ abstract class Service extends Base {
      * @param array $config config of Service,default is empty
      * @return Service
      */
-    public static function newInstance($name = '', $config = array()) {
+    public static function newInstance($name = '', $config = '') {
         if(is_array($config) && !empty($config)) {
             Debugger::info("new service instance by name:$name and config(json encoded):".json_encode($config), 'Service');
         } else {
@@ -39,6 +39,8 @@ abstract class Service extends Base {
             }
             if($provider instanceof IServiceProvider) {
                 self::$instances[$name] = $provider->provide($name);//执行provide方法
+            } else if($provider) {
+                Debugger::warn('given provider isnot an instance of IServiceProvider', 'SERVICE');
             }
             //如果没有自定义实现IServiceProvider接口的类对象，使用默认的配置项进行实现
             if(!isset(self::$instances[$name]) || !(self::$instances[$name] instanceof Service)) {

@@ -54,6 +54,8 @@ abstract class Action extends Base {
             }
             if($provider instanceof IActionProvider) {
                 self::$instance = $provider->provide($name); // 执行provide方法
+            } else if($provider) {
+                Debugger::warn('given provider isnot an instance of IActionProvider', 'ACTION');
             }
             // 如果没有自定义实现IActionProvider接口的类对象，使用默认的配置项进行实现
             if(! (self::$instance instanceof Action)) {
@@ -143,8 +145,9 @@ abstract class Action extends Base {
                 $services[$name]->initialize();
             }
         } else {
-            $services['demo'] = Service::newInstance();
-            $services['demo']->initialize();
+            //不自动初始化没有配置的service
+            //$services[''] = Service::newInstance();
+            //$services['']->initialize();
         }
         
         return $this;

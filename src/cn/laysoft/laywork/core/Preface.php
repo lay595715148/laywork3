@@ -35,6 +35,8 @@ abstract class Preface extends Base {
             }
             if($provider instanceof IPrefaceProvider) {
                 self::$instance = $provider->provide($name);//执行provide方法
+            } else if($provider) {
+                Debugger::warn('given provider isnot an instance of IPrefaceProvider', 'PREFACE');
             }
             //如果没有自定义实现IPrefaceProvider接口的类对象，使用默认的配置项进行实现
             if(!(self::$instance instanceof Preface)) {

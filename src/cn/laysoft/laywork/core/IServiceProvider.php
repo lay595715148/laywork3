@@ -15,6 +15,5 @@ interface IServiceProvider extends IProvider {
 	 * @see \cn\laysoft\laywork\core\IProvider::provide()
 	 * @return Service
 	 */
-	public function provide($name = '');
 }
 ?>
