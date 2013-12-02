@@ -25,7 +25,7 @@ abstract class Bean extends Base {
      * @param string|array $name name or config of Bean
      * @return Bean
      */
-    public static function newInstance($name = '') {
+    public static function getInstance($name = '') {
         if(is_array($name)) {
             Debugger::info("new bean instance by config(json encoded):".json_encode($name), 'BEAN');
         } else {

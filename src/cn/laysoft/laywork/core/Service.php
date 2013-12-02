@@ -25,7 +25,7 @@ abstract class Service extends Base {
      * @param array $config config of Service,default is empty
      * @return Service
      */
-    public static function newInstance($name = '', $config = '') {
+    public static function getInstance($name = '', $config = '') {
         if(is_array($config) && !empty($config)) {
             Debugger::info("new service instance by name:$name and config(json encoded):".json_encode($config), 'Service');
         } else {
@@ -84,23 +84,24 @@ abstract class Service extends Base {
      * 初始化
      */
     public function initialize() {
-        Debugger::info('initialize', 'Service');
+        Debugger::info('initialize', 'SERVICE');
         $config = &$this->config;
         
         //加载配置中的bean
         if(is_array($config) && array_key_exists('bean', $config) && is_string($config['bean'])) {
-            $this->bean = Bean::newInstance($config['bean']);
+            $this->bean = Bean::getInstance($config['bean']);
         } else {
-            $this->bean = Bean::newInstance();
+            $this->bean = Bean::getInstance();
         }
         //加载配置中的store
         if(is_array($config) && array_key_exists('store', $config) && is_string($config['store'])) {
-            $this->store = Store::newInstance($config['store'], $this->bean);
+            $this->store = Store::getInstance($config['store'], $this->bean);
             $this->store->initialize();
         } else {
-            $this->store = Store::newInstance('', $this->bean);
+            $this->store = Store::getInstance('', $this->bean);
             $this->store->initialize();
         }
+        Debugger::info("initialized", 'SERVICE');
     }
 }
 ?>

@@ -40,20 +40,22 @@ abstract class Action extends Base {
      *            name or config of Action
      * @return Action
      */
-    public static function newInstance($name = '') {
+    public static function getInstance($name = '') {
         if(is_array($name)) {
             Debugger::info("new action instance by config(json encoded):" . json_encode($name), 'ACTION');
         } else {
             Debugger::info("new action instance by name:$name", 'ACTION');
         }
         
-        if(self::$instance == null) { // 增加provider功能
+        if(self::$instance == null) {
+            // 增加provider功能
             $provider = Laywork::get(self::TAG_PROVIDER);
             if($provider && is_string($provider)) {
                 $provider = new $provider();
             }
             if($provider instanceof IActionProvider) {
-                self::$instance = $provider->provide($name); // 执行provide方法
+                // 执行provide方法
+                self::$instance = $provider->provide($name);
             } else if($provider) {
                 Debugger::warn('given provider isnot an instance of IActionProvider', 'ACTION');
             }
@@ -68,6 +70,22 @@ abstract class Action extends Base {
                     Debugger::warn('action has been instantiated by default DemoAction', 'ACTION');
                     self::$instance = new DemoAction($config);
                 }
+            }
+        }
+        return self::$instance;
+    }
+    
+    /**
+     * 
+     * @param string $classname
+     * @param array $config
+     * @return Ambigous <Action, DemoAction>
+     */
+    public static function getInstanceByClassname($classname, $config = array()) {
+        if(self::$instance == null) {
+            self::$instance = new $classname($config);
+            if(! (self::$instance instanceof Action)) {
+                Debugger::warn('is not an Action instance', 'ACTION');
             }
         }
         return self::$instance;
@@ -120,20 +138,20 @@ abstract class Action extends Base {
         
         // 加载配置中的所有preface
         if(is_array($config) && array_key_exists('preface', $config)) {
-            $preface = Preface::newInstance($config['preface']);
+            $preface = Preface::getInstance($config['preface']);
             $preface->initialize();
         } else {
-            $preface = Preface::newInstance();
+            $preface = Preface::getInstance();
             $preface->initialize();
         }
         
         // 加载配置中的所有template
         if(is_array($config) && array_key_exists('template', $config)) {
-            $template = Template::newInstance($config['template']);
+            $template = Template::getInstance($config['template']);
             $template->preface = $preface;
             $template->initialize();
         } else {
-            $template = Template::newInstance();
+            $template = Template::getInstance();
             $template->preface = $preface;
             $template->initialize();
         }
@@ -141,14 +159,15 @@ abstract class Action extends Base {
         // 加载配置中的所有service
         if(is_array($config) && array_key_exists('services', $config) && $config['services'] && is_array($config['services'])) {
             foreach($config['services'] as $k => $name) {
-                $services[$name] = Service::newInstance($name);
+                $services[$name] = Service::getInstance($name);
                 $services[$name]->initialize();
             }
         } else {
             //不自动初始化没有配置的service
-            //$services[''] = Service::newInstance();
+            //$services[''] = Service::getInstance();
             //$services['']->initialize();
         }
+        Debugger::info("initialized", 'ACTION');
         
         return $this;
     }
@@ -163,7 +182,7 @@ abstract class Action extends Base {
         if(array_key_exists($name, $services)) {
             return $services[$name];
         } else if(is_string($name) && $name) {
-            $services[$name] = Service::newInstance($name);
+            $services[$name] = Service::getInstance($name);
             $services[$name]->initialize();
             return $services[$name];
         } else {

@@ -21,7 +21,7 @@ abstract class Preface extends Base {
      * @param $config default is empty
      * @return Preface
      */
-    public static function newInstance($name = '') {
+    public static function getInstance($name = '') {
         if(is_array($name)) {
             Debugger::info("new preface instance by config(json encoded):".json_encode($name), 'PREFACE');
         } else {
@@ -71,6 +71,7 @@ abstract class Preface extends Base {
      */
     public function initialize() {//must return $this
         Debugger::info('initialize', 'PREFACE');
+        Debugger::info('initialized', 'PREFACE');
         return $this;
     }
 }

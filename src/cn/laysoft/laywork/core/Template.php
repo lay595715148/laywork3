@@ -25,7 +25,7 @@ abstract class Template extends Base {
      * @param $config default is empty
      * @return Template
      */
-    public static function newInstance($name = '') {
+    public static function getInstance($name = '') {
         if(is_array($name)) {
             Debugger::info("new template instance by config(json encoded):".json_encode($name), 'TEMPLATE');
         } else {
@@ -114,6 +114,7 @@ abstract class Template extends Base {
      */
     public function initialize() {//must return $this
         Debugger::info('initialize', 'TEMPLATE');
+        Debugger::info('initialized', 'TEMPLATE');
         return $this;
     }
     /**

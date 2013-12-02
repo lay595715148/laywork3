@@ -25,7 +25,7 @@ abstract class Store extends Base {
      * @param $config default is empty
      * @return Store
      */
-    public static function newInstance($name = '', $bean = null, $config = '') {
+    public static function getInstance($name = '', $bean = null, $config = '') {
         if(is_array($config) && !empty($config)) {
             Debugger::info("new store instance by name:$name and config(json encoded):".json_encode($config), 'STORE');
         } else {
@@ -81,6 +81,7 @@ abstract class Store extends Base {
      */
     public function initialize() {
         Debugger::info('initialize', 'STORE');
+        Debugger::info('initialized', 'STORE');
         return $this;
     }
 }
