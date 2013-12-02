@@ -9,4 +9,5 @@ require
 =======
 
 - https://github.com/lay595715148/laybug
+- https://github.com/lay595715148/layfig
 - https://github.com/lay595715148/layload
