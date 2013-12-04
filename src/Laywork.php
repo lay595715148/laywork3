@@ -597,8 +597,4 @@ final class Laywork {
         $obj->tail();
     }
 }
-
-if(! class_exists('W', false)) {
-    class_alias('Laywork', 'W'); // Layload class alias
-}
 ?>
