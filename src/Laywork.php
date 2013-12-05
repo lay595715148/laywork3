@@ -10,11 +10,11 @@ use cn\laysoft\laywork\core\Action; // if using namespace
 if(! defined('INIT_LAYWORK')) {
     exit();
 }
-
-global $_LAYWORKPATH, $_ROOTPATH;
-
-$_LAYWORKPATH = str_replace("\\", "/", dirname(__DIR__)); // Returns parent directory's path
-$_ROOTPATH = str_replace("\\", "/", dirname(dirname(__DIR__)));
+/**
+ * 初始化Laywork::$_LAYWORKPATH和Laywork::$_ROOTPATH
+ */
+Laywork::$_LAYWORKPATH = str_replace("\\", "/", dirname(__DIR__));
+Laywork::$_ROOTPATH = str_replace("\\", "/", dirname(dirname(__DIR__)));
 
 /**
  * <p>Laywork主类</p>
@@ -24,6 +24,16 @@ $_ROOTPATH = str_replace("\\", "/", dirname(dirname(__DIR__)));
  * @author Lay Li
  */
 final class Laywork {
+    /**
+     * global laywork library directory,it won't change
+     * @var string
+     */
+    public static $_LAYWORKPATH;
+    /**
+     * customized root path,default is laywork's parent directory
+     * @var string
+     */
+    public static $_ROOTPATH;
     
     /**
      *
@@ -69,7 +79,8 @@ final class Laywork {
      * @return void
      */
     public static function rootpath($rootpath = '') {
-        global $_ROOTPATH;
+        //global $_ROOTPATH;
+        $_ROOTPATH = &self::$_ROOTPATH;
         if(is_dir($rootpath)) {
             $_ROOTPATH = str_replace("\\", "/", $rootpath);
         } else {
@@ -82,7 +93,7 @@ final class Laywork {
      * @return void
      */
     public static function layworkpath() {
-        global $_LAYWORKPATH;
+        $_LAYWORKPATH = &self::$_LAYWORKPATH;
         $_LAYWORKPATH = str_replace("\\", "/", dirname(__DIR__));
     }
     /**
@@ -93,12 +104,12 @@ final class Laywork {
      * @return void
      */
     public static function initialize($debug = '') {
-        // 使用自定义的autoload方法
+        // 使用自定义的autoload方法,去除使用layload库进行加载类
         // spl_autoload_register('Laywork::autoload');
         
         // 使用layload的autoload方法
-        global $_LAYWORKPATH;
-        Layload::configure(self::$classes);
+        $_LAYWORKPATH = &self::$_LAYWORKPATH;
+        Layload::configure(self::$classes, false);
         Layload::classpath($_LAYWORKPATH . '/src');
         
         if($debug !== '')
@@ -113,7 +124,7 @@ final class Laywork {
      * @return void
      */
     public static function autoload($classname) {
-        global $_LAYWORKPATH;
+        $_LAYWORKPATH = &self::$_LAYWORKPATH;
         $classpath = $_LAYWORKPATH . '/src';
         $classes = &self::$classes;
         $suffixes = array(
@@ -421,7 +432,8 @@ final class Laywork {
      * @return void
      */
     public static function configure($configuration, $isFile = true) {
-        global $_ROOTPATH;
+        //global $_ROOTPATH;
+        $_ROOTPATH = &self::$_ROOTPATH;
         $configurations = &self::$configuration;
         if(is_array($configuration) && ! $isFile) {
             // Debugger::info('$configuration:'.json_encode($configuration), 'CONFIGURE');
@@ -583,7 +595,6 @@ final class Laywork {
      * run application
      */
     public function run($action, $method, $params) {
-        // global $_LOADPATH, $_CLASSPATH, $_ROOTPATH, $_LAYWORKPATH;
         if(! is_string($action) || ! $action) {
             // generate $dirname,$basename, $extension, $filename
             extract(pathinfo($_SERVER['PHP_SELF']));
