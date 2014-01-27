@@ -89,16 +89,16 @@ abstract class Service extends Base {
         
         //加载配置中的bean
         if(is_array($config) && array_key_exists('bean', $config) && is_string($config['bean'])) {
-            $this->bean = Bean::getInstance($config['bean']);
+            $this->bean = &Bean::getInstance($config['bean']);
         } else {
-            $this->bean = Bean::getInstance();
+            $this->bean = &Bean::getInstance();
         }
         //加载配置中的store
         if(is_array($config) && array_key_exists('store', $config) && is_string($config['store'])) {
-            $this->store = Store::getInstance($config['store'], $this->bean);
+            $this->store = &Store::getInstance($config['store'], $this->bean);
             $this->store->initialize();
         } else {
-            $this->store = Store::getInstance('', $this->bean);
+            $this->store = &Store::getInstance('', $this->bean);
             $this->store->initialize();
         }
         Debugger::info("initialized", 'SERVICE');

@@ -138,20 +138,20 @@ abstract class Action extends Base {
         
         // 加载配置中的所有preface
         if(is_array($config) && array_key_exists('preface', $config)) {
-            $preface = Preface::getInstance($config['preface']);
+            $preface = &Preface::getInstance($config['preface']);
             $preface->initialize();
         } else {
-            $preface = Preface::getInstance();
+            $preface = &Preface::getInstance();
             $preface->initialize();
         }
         
         // 加载配置中的所有template
         if(is_array($config) && array_key_exists('template', $config)) {
-            $template = Template::getInstance($config['template']);
+            $template = &Template::getInstance($config['template']);
             $template->preface = $preface;
             $template->initialize();
         } else {
-            $template = Template::getInstance();
+            $template = &Template::getInstance();
             $template->preface = $preface;
             $template->initialize();
         }
@@ -159,8 +159,9 @@ abstract class Action extends Base {
         // 加载配置中的所有service
         if(is_array($config) && array_key_exists('services', $config) && $config['services'] && is_array($config['services'])) {
             foreach($config['services'] as $k => $name) {
-                $services[$name] = Service::getInstance($name);
+                $services[$name] = &Service::getInstance($name);
                 $services[$name]->initialize();
+                $this->{$name.'Service'} = &$services[$name];
             }
         } else {
             //不自动初始化没有配置的service
@@ -182,8 +183,9 @@ abstract class Action extends Base {
         if(array_key_exists($name, $services)) {
             return $services[$name];
         } else if(is_string($name) && $name) {
-            $services[$name] = Service::getInstance($name);
+            $services[$name] = &Service::getInstance($name);
             $services[$name]->initialize();
+            $this->{$name.'Service'} = &$services[$name];
             return $services[$name];
         } else {
             Debugger::warn('service name is empty or hasnot been autoinstantiated by service name:'.$name, 'SERVICE');
